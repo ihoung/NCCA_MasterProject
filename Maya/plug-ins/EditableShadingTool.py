@@ -1,5 +1,6 @@
 from ctypes import util
 from imp import reload
+import inspect
 import os
 import sys
 from functools import partial
@@ -19,22 +20,26 @@ from shiboken2 import wrapInstance
 maya_useNewAPI = True
 
 test_env = True
-
+# Delete all the package modules before importing, so that all the modules can be reloaded in Python 2
 if test_env and sys.version_info.major == 2:
-    plugin_paths = [path for path in os.getenv('MAYA_PLUG_IN_PATH').split(':') if os.getenv('EDITABLE_SHADING_PLUGIN_ROOT') in path]
+    plugin_paths = [path for path in os.getenv('MAYA_PLUG_IN_PATH').split(os.pathsep) if os.getenv('EDITABLE_SHADING_PLUGIN_ROOT') in path]
     if len(plugin_paths) is not 0:
         src_path = os.path.join(plugin_paths[0], 'src')
-        print(sys.modules)
-        for (dirpath, dirnames, filenames) in os.walk(src_path):
-            for file in filenames:
-                filename, ext = os.path.splitext(file)
-                if ext == '.pyc' and filename in sys.modules:
-                    print(filename)
-                    reload(filename)
+        toDelete = []
+        for key, module in sys.modules.iteritems():
+            try:
+                module_file_path = inspect.getfile(module)
+                if module_file_path.startswith(src_path):
+                    # print('Delete module {0}'.format(module_file_path))
+                    toDelete.append(key)
+            except:
+                pass
+        for module in toDelete:
+            del(sys.modules[module])
 
-def get_main_window():
-    window = omui.MQtUtil.mainWindow()
-    return wrapInstance(int(window), QtWidgets.QWidget)
+
+# import src moduls here
+from src import utils
 
 class EditableShading(OpenMaya.MPxCommand):
     CMD_NAME = "EditableShading"
