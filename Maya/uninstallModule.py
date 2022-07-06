@@ -6,8 +6,6 @@ import sys
 from pathlib import Path
 import argparse
 
-from numpy import delete
-
 maya_locations = {
     "Linux": "/maya",
     "Darwin": "/Library/Preferences/Autodesk/maya",
@@ -33,13 +31,13 @@ def uninstall_module(location):
 
 def check_maya_installed(dir_path):
     if dir_path:
-        mloc = dir_path
+        mloc = str(dir_path) + '/'
     else:
         op_sys = platform.system()
         mloc = f"{Path.home()}{maya_locations.get(op_sys)}/"
     
     if not os.path.isdir(mloc):
-        raise
+        raise OSError(f"<{mloc}> Path doesn't exist!")
     return mloc
 
 if __name__ == '__main__':
@@ -49,8 +47,9 @@ if __name__ == '__main__':
 
     try:
         m_loc = check_maya_installed(args.dirpath)
-    except:
+    except OSError as e:
         print("Error can't find maya install")
+        print("error = ", e)
         sys.exit(0)
 
     uninstall_module(m_loc)

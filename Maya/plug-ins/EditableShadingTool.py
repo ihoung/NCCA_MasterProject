@@ -1,3 +1,4 @@
+from ctypes import util
 from imp import reload
 import os
 import sys
@@ -17,11 +18,23 @@ from shiboken2 import wrapInstance
 
 maya_useNewAPI = True
 
+test_env = True
+
+if test_env and sys.version_info.major == 2:
+    plugin_paths = [path for path in os.getenv('MAYA_PLUG_IN_PATH').split(':') if os.getenv('EDITABLE_SHADING_PLUGIN_ROOT') in path]
+    if len(plugin_paths) is not 0:
+        src_path = os.path.join(plugin_paths[0], 'src')
+        print(sys.modules)
+        for (dirpath, dirnames, filenames) in os.walk(src_path):
+            for file in filenames:
+                filename, ext = os.path.splitext(file)
+                if ext == '.pyc' and filename in sys.modules:
+                    print(filename)
+                    reload(filename)
 
 def get_main_window():
     window = omui.MQtUtil.mainWindow()
     return wrapInstance(int(window), QtWidgets.QWidget)
-
 
 class EditableShading(OpenMaya.MPxCommand):
     CMD_NAME = "EditableShading"
@@ -68,7 +81,7 @@ def initializePlugin(plugin):
     try:
         plugin_fn.registerCommand(EditableShading.CMD_NAME, EditableShading.creator)
         # cmds.evalDeferred("cmds.M2UExport()")
-        # cmds.evalDeferred("cmds.menu('M2UExportSetting', label='Unreal Export Tool', parent='MayaWindow', pmc=cmds.M2UExport)")
+        cmds.evalDeferred("cmds.menu('EditableShading', label='Editable Shading', parent='MayaWindow', pmc=cmds.EditableShading)")
     except:
         OpenMaya.MGlobal.displayError(
             "Failed to register command: {0}".format(EditableShading.CMD_NAME)
@@ -80,7 +93,7 @@ def uninitializePlugin(plugin):
     EditableShading.cleanup()
     plugin_fn = OpenMaya.MFnPlugin(plugin)
     try:
-        cmds.evalDeferred("cmds.deleteUI('M2UExportSetting')")
+        cmds.evalDeferred("cmds.deleteUI('EditableShading')")
         plugin_fn.deregisterCommand(EditableShading.CMD_NAME)
     except:
         OpenMaya.MGlobal.displayError(

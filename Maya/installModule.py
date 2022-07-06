@@ -27,7 +27,7 @@ def install_module(location):
         print("writing module file")
         with open(location + "modules/EditableShadingTool.mod", "w") as file:
             file.write(f"+ EditableShadingTool 1.0 {current_dir}\n")
-            file.write(f"MAYA_PLUG_IN_PATH +:= Plugin\n")
+            file.write(f"MAYA_PLUG_IN_PATH +:= plug-ins\n")
             file.write(f"EDITABLE_SHADING_PLUGIN_ROOT={current_dir}\n\n")
     # if we are using Maya 2022 and above this will be ok
     # however if using 2020 and below we need to set Maya.env
@@ -42,13 +42,13 @@ def install_module(location):
 
 def check_maya_installed(dir_path):
     if dir_path:
-        mloc = dir_path + '/'
+        mloc = str(dir_path) + '/'
     else:
         op_sys = platform.system()
         mloc = f"{Path.home()}{maya_locations.get(op_sys)}/"
     
     if not os.path.isdir(mloc):
-        raise
+        raise OSError(f"<{mloc}> Path doesn't exist!")
     return mloc
 
 
@@ -58,9 +58,10 @@ if __name__ == "__main__":
     args = parse.parse_args()
 
     try:
-        m_loc = check_maya_installed(str(args.dirpath))
-    except:
+        m_loc = check_maya_installed(args.dirpath)
+    except OSError as e:
         print("Error can't find maya install")
+        print("error = ", e)
         sys.exit(0)
 
     install_module(m_loc)
