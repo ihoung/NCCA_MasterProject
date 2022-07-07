@@ -39,37 +39,7 @@ if test_env and sys.version_info.major == 2:
 
 
 # import src moduls here
-from src import utils
-
-class EditableShading(OpenMaya.MPxCommand):
-    CMD_NAME = "EditableShading"
-    ui = None
-
-    def __init__(self):
-        if sys.version_info.major == 3:
-            super().__init__()
-        else:
-            super(EditableShading, self).__init__()
-        ui = None
-
-    @classmethod
-    def doIt(cls, args):
-        """
-        Called when the command is executed in script
-        """
-        pass
-
-    @classmethod
-    def creator(cls):
-        """
-        Think of this as a factory
-        """
-        return EditableShading()
-
-    @classmethod
-    def cleanup(cls):
-        # cleanup the UI and call the destructors
-        pass
+from src.commands import EditableShading
 
 
 def initializePlugin(plugin):
@@ -85,8 +55,8 @@ def initializePlugin(plugin):
     plugin_fn = OpenMaya.MFnPlugin(plugin, vendor, version)
     try:
         plugin_fn.registerCommand(EditableShading.CMD_NAME, EditableShading.creator)
-        # cmds.evalDeferred("cmds.M2UExport()")
-        cmds.evalDeferred("cmds.menu('EditableShading', label='Editable Shading', parent='MayaWindow', pmc=cmds.EditableShading)")
+        # cmds.evalDeferred("cmds.menu('EditableShading', label='Editable Shading', parent='MayaWindow', pmc=cmds.EditableShading)")
+        EditableShading.addShelf()
     except:
         OpenMaya.MGlobal.displayError(
             "Failed to register command: {0}".format(EditableShading.CMD_NAME)
@@ -98,7 +68,8 @@ def uninitializePlugin(plugin):
     EditableShading.cleanup()
     plugin_fn = OpenMaya.MFnPlugin(plugin)
     try:
-        cmds.evalDeferred("cmds.deleteUI('EditableShading')")
+        # cmds.evalDeferred("cmds.deleteUI('EditableShading')")
+        EditableShading.deleteShelf()
         plugin_fn.deregisterCommand(EditableShading.CMD_NAME)
     except:
         OpenMaya.MGlobal.displayError(
