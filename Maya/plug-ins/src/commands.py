@@ -1,43 +1,43 @@
 import sys
 import maya.api.OpenMaya as OpenMaya
 
-from toolbar import EditableShadingShelf
 
-
-class EditableShading(OpenMaya.MPxCommand):
-    CMD_NAME = "EditableShading"
-    ui = None
-
+class EditableShading(object):
     def __init__(self):
-        if sys.version_info.major == 3:
-            super().__init__()
-        else:
-            super(EditableShading, self).__init__()
-        ui = None
-
-    @classmethod
-    def doIt(cls, args):
-        """
-        Called when the command is executed in script
-        """
         pass
 
-    @classmethod
-    def creator(cls):
-        """
-        Think of this as a factory
-        """
-        return EditableShading()
 
-    @classmethod
-    def cleanup(cls):
-        # cleanup the UI and call the destructors
-        pass
+#####################################################################
+# Plugin Commands
+#####################################################################
+# class AddEditableShadingShelf(OpenMaya.MPxCommand):
+#     CMD_NAME = "AddEditableShadingShelf"
 
-    @classmethod
-    def addShelf(cls):
-        EditableShadingShelf.initializeShelf()
+#     def __init__(self):
+#         if sys.version_info.major == 3:
+#             super().__init__()
+#         else:
+#             super(AddEditableShadingShelf, self).__init__()
 
-    @classmethod
-    def deleteShelf(cls):
-        EditableShadingShelf.deleteShelf()
+#     @classmethod
+#     def doIt(cls, args):
+#         """
+#         Called when the command is executed in script
+#         """
+#         EditableShadingShelf.initializeShelf()
+
+#     @classmethod
+#     def redoIt(cls, args):
+#         EditableShadingShelf.deleteShelf()
+
+#     @classmethod
+#     def creator(cls):
+#         """
+#         Think of this as a factory
+#         """
+#         return AddEditableShadingShelf()
+
+#     @classmethod
+#     def cleanup(cls):
+#         # cleanup the UI and call the destructors
+#         pass

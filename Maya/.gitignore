@@ -1,1 +1,5 @@
+# Directories
 /Test/*
+
+# Files
+*.pyc

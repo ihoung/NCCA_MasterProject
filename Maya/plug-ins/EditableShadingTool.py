@@ -4,22 +4,21 @@ import inspect
 import os
 import sys
 from functools import partial
-import shutil
 
 import maya.api.OpenMaya as OpenMaya
 import maya.api.OpenMayaUI as OpenMayaUI
 import maya.cmds as cmds
-import maya.OpenMayaMPx as OpenMayaMPx
-import maya.OpenMayaUI as omui
-from PySide2 import QtCore, QtWidgets
-from PySide2.QtCore import QFile
-from PySide2.QtGui import QColor, QFont
-from PySide2.QtUiTools import QUiLoader
-from shiboken2 import wrapInstance
+# import maya.OpenMayaUI as omui
+# from PySide2 import QtCore, QtWidgets
+# from PySide2.QtCore import QFile
+# from PySide2.QtGui import QColor, QFont
+# from PySide2.QtUiTools import QUiLoader
+# from shiboken2 import wrapInstance
 
 maya_useNewAPI = True
 
 test_env = True
+
 # Delete all the package modules before importing, so that all the modules can be reloaded in Python 2
 if test_env and sys.version_info.major == 2:
     plugin_paths = [path for path in os.getenv('MAYA_PLUG_IN_PATH').split(os.pathsep) if os.getenv('EDITABLE_SHADING_PLUGIN_ROOT') in path]
@@ -39,7 +38,34 @@ if test_env and sys.version_info.major == 2:
 
 
 # import src moduls here
-from src.commands import EditableShading
+from src.toolbar import EditableShadingShelf, EditableShadingMenu
+import src.commands as commands
+from src.commands import *
+
+# Get all MPxCommand classes
+def getCommands():
+    cmd_classes = [cls for name, cls in inspect.getmembers(commands, inspect.isclass) if issubclass(cls, OpenMaya.MPxCommand)]
+    return cmd_classes
+
+def registerCommands(plugin_fn):
+    commands = getCommands()
+    for command in commands:
+        try:
+            plugin_fn.registerCommand(command.CMD_NAME, command.creator)
+        except:
+            OpenMaya.MGlobal.displayError(
+                "Failed to register command: {0}".format(command.CMD_NAME)
+            )
+
+def deregisterCommands(plugin_fn):
+    commands = getCommands()
+    for command in commands:
+        try:
+            plugin_fn.deregisterCommand(command.CMD_NAME)
+        except:
+            OpenMaya.MGlobal.displayError(
+                "Failed to deregister command: {0}".format(command.CMD_NAME)
+            )
 
 
 def initializePlugin(plugin):
@@ -53,28 +79,17 @@ def initializePlugin(plugin):
         raise
 
     plugin_fn = OpenMaya.MFnPlugin(plugin, vendor, version)
-    try:
-        plugin_fn.registerCommand(EditableShading.CMD_NAME, EditableShading.creator)
-        # cmds.evalDeferred("cmds.menu('EditableShading', label='Editable Shading', parent='MayaWindow', pmc=cmds.EditableShading)")
-        EditableShading.addShelf()
-    except:
-        OpenMaya.MGlobal.displayError(
-            "Failed to register command: {0}".format(EditableShading.CMD_NAME)
-        )
+    registerCommands(plugin_fn)
+    EditableShadingMenu.initializeMenu()
+    EditableShadingShelf.initializeShelf()
 
 
 def uninitializePlugin(plugin):
     # cleanup the dialog first
-    EditableShading.cleanup()
     plugin_fn = OpenMaya.MFnPlugin(plugin)
-    try:
-        # cmds.evalDeferred("cmds.deleteUI('EditableShading')")
-        EditableShading.deleteShelf()
-        plugin_fn.deregisterCommand(EditableShading.CMD_NAME)
-    except:
-        OpenMaya.MGlobal.displayError(
-            "Failed to deregister command: {0}".format(EditableShading.CMD_NAME)
-        )
+    EditableShadingShelf.deleteShelf()
+    EditableShadingMenu.deleteMenu()
+    deregisterCommands(plugin_fn)
 
 
 if __name__ == '__main__':
