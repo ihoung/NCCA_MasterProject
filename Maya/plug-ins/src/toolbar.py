@@ -1,8 +1,10 @@
+from distutils import command
 import maya.api.OpenMaya as OpenMaya
 import maya.cmds as cmds
 import maya.mel as mel
 
 from commands import EditableShading
+import utils
 
 class EditableShadingShelf(object):
     SHELF_NAME = 'Editable Shading'
@@ -13,6 +15,7 @@ class EditableShadingShelf(object):
         if not (cls.shelf_instance and cmds.shelfLayout(cls.shelf_instance, q=1, ex=1)):
             cls.shelf_instance = cmds.shelfLayout(cls.SHELF_NAME, p="ShelfLayout")
             # Add buttons
+            cmds.shelfButton(ann='Add a shading edit', i='locator.png', c=EditableShading.addEditLocator)
 
     @classmethod
     def createShelf(cls, args):
@@ -37,6 +40,7 @@ class EditableShadingMenu(object):
             rendering_menuset = mel.eval('findMenuSetFromLabel("Rendering")')
             cls.menu_instance = cmds.menu(label=cls.MENU_NAME, parent='MayaWindow', visible=cmds.menuSet(q=1, label=1)=='Rendering')
             # Add menu items
+            cmds.menuItem(label='Add Edit Locator', command=EditableShading.addEditLocator)
             cmds.menuItem(label='Open Shelf', command=EditableShadingShelf.createShelf)
             # Add menu to rendering menu set
             cmds.menuSet(rendering_menuset, addMenu=cls.menu_instance)

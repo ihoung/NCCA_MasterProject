@@ -6,6 +6,10 @@ class EditableShading(object):
     def __init__(self):
         pass
 
+    @classmethod
+    def addEditLocator(cls, *args):
+        print('Add edit locator')
+
 
 #####################################################################
 # Plugin Commands
