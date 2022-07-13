@@ -6,7 +6,6 @@ import sys
 from functools import partial
 
 import maya.api.OpenMaya as OpenMaya
-import maya.api.OpenMayaUI as OpenMayaUI
 import maya.cmds as cmds
 # import maya.OpenMayaUI as omui
 # from PySide2 import QtCore, QtWidgets
@@ -41,6 +40,7 @@ if test_env and sys.version_info.major == 2:
 from src.toolbar import EditableShadingShelf, EditableShadingMenu
 import src.commands as commands
 from src.commands import *
+from src.nodes import *
 
 # Get all MPxCommand classes
 def getCommands():
@@ -67,6 +67,18 @@ def deregisterCommands(plugin_fn):
                 "Failed to deregister command: {0}".format(command.CMD_NAME)
             )
 
+def registerNodes(plugin_fn):
+    try:
+        plugin_fn.registerNode('editableShadingNode', EditableShadingNode.id, EditableShadingNode.creator, EditableShadingNode.initialize, OpenMaya.MPxNode.kLocatorNode)
+    except:
+        OpenMaya.MGlobal.displayError("Failed to register node EditableShadingNode")
+
+def deregisterNodes(plugin_fn):
+    try: 
+        plugin_fn.deregisterNode(EditableShadingNode.id)
+    except:
+        OpenMaya.MGlobal.displayError("Failed to deregister node EditableShadingNode")
+
 
 def initializePlugin(plugin):
     vendor = "YiyangHuang"
@@ -79,6 +91,7 @@ def initializePlugin(plugin):
         raise
 
     plugin_fn = OpenMaya.MFnPlugin(plugin, vendor, version)
+    registerNodes(plugin_fn)
     registerCommands(plugin_fn)
     EditableShadingMenu.initializeMenu()
     EditableShadingShelf.initializeShelf()
@@ -90,6 +103,7 @@ def uninitializePlugin(plugin):
     EditableShadingShelf.deleteShelf()
     EditableShadingMenu.deleteMenu()
     deregisterCommands(plugin_fn)
+    deregisterNodes(plugin_fn)
 
 
 if __name__ == '__main__':
