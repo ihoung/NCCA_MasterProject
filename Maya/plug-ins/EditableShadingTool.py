@@ -6,6 +6,7 @@ import sys
 from functools import partial
 
 import maya.api.OpenMaya as OpenMaya
+import maya.api.OpenMayaRender as OMR
 import maya.cmds as cmds
 # import maya.OpenMayaUI as omui
 # from PySide2 import QtCore, QtWidgets
@@ -69,15 +70,26 @@ def deregisterCommands(plugin_fn):
 
 def registerNodes(plugin_fn):
     try:
-        plugin_fn.registerNode('editableShadingNode', EditableShadingNode.id, EditableShadingNode.creator, EditableShadingNode.initialize, OpenMaya.MPxNode.kLocatorNode)
+        plugin_fn.registerNode('editableShadingNode', EditableShadingNode.id, 
+        EditableShadingNode.creator, EditableShadingNode.initialize, 
+        OpenMaya.MPxNode.kLocatorNode, EditableShadingNode.drawDbClassification)
     except:
         OpenMaya.MGlobal.displayError("Failed to register node EditableShadingNode")
+    try:
+        OMR.MDrawRegistry.registerDrawOverrideCreator(EditableShadingNode.drawDbClassification, EditableShadingNode.drawRegistrantId, EditableShadingNodeDrawOverride.creator)
+    except:
+        OpenMaya.MGlobal.displayError("Failed to register draw override EditableShadingNodeDrawOverride")
 
 def deregisterNodes(plugin_fn):
     try: 
         plugin_fn.deregisterNode(EditableShadingNode.id)
     except:
         OpenMaya.MGlobal.displayError("Failed to deregister node EditableShadingNode")
+    try:
+        OMR.MDrawRegistry.deregisterDrawOverrideCreator(EditableShadingNode.drawDbClassification, EditableShadingNode.drawRegistrantId)
+    except:
+        OpenMaya.MGlobal.displayError("Failed to deregister draw override EditableShadingNodeDrawOverride")
+
 
 
 def initializePlugin(plugin):
@@ -98,7 +110,6 @@ def initializePlugin(plugin):
 
 
 def uninitializePlugin(plugin):
-    # cleanup the dialog first
     plugin_fn = OpenMaya.MFnPlugin(plugin)
     EditableShadingShelf.deleteShelf()
     EditableShadingMenu.deleteMenu()
