@@ -4,10 +4,8 @@ import maya.api.OpenMayaRender as OMR
 
 import utils
 
-######################################################################################
-# EditableShadingNode start
 
-# EditableShadingNode draw data
+# Draw data of locator nodes
 nodeLineList = [
     [-0.5, 0.0, 0.0],
     [0.5, 0.0, 0.0],
@@ -17,14 +15,17 @@ nodeLineList = [
     [0.0, 0.0, 0.5]
 ]
 
-class EditableShadingNode(OMUI.MPxLocatorNode):
+######################################################################################
+# ShadingLocatorNode start
+
+class ShadingLocatorNode(OMUI.MPxLocatorNode):
     id = OM.MTypeId(0x00070001)
-    drawDbClassification = "drawdb/geometry/editableshading"
-    drawRegistrantId = "EditableShadingNodePlugin"
+    drawDbClassification = "drawdb/geometry/shadinglocator"
+    drawRegistrantId = "ShadingLocatorNodePlugin"
 
     @staticmethod
     def creator():
-        return EditableShadingNode()
+        return ShadingLocatorNode()
 
     @staticmethod
     def initialize():
@@ -61,17 +62,17 @@ class EditableShadingNode(OMUI.MPxLocatorNode):
 
 
 ## Viewport 2.0 override implementation
-class EditableShadingNodeDrawData(OM.MUserData):
+class ShadingLocatorNodeDrawData(OM.MUserData):
     def __init__(self):
         OM.MUserData.__init__(self, False)
         self.fColor = OM.MColor()
         self.fLineList = OM.MPointArray()
 
 
-class EditableShadingNodeDrawOverride(OMR.MPxDrawOverride):
+class ShadingLocatorNodeDrawOverride(OMR.MPxDrawOverride):
     @staticmethod
     def creator(obj):
-        return EditableShadingNodeDrawOverride(obj)
+        return ShadingLocatorNodeDrawOverride(obj)
 
     def __init__(self, obj):
         OMR.MPxDrawOverride.__init__(self, obj, None, False)
@@ -81,8 +82,8 @@ class EditableShadingNodeDrawOverride(OMR.MPxDrawOverride):
 
     def prepareForDraw(self, objPath, cameraPath, frameContext, oldData):
         data = oldData
-        if not isinstance(data, EditableShadingNodeDrawData):
-            data = EditableShadingNodeDrawData()
+        if not isinstance(data, ShadingLocatorNodeDrawData):
+            data = ShadingLocatorNodeDrawData()
 
         global nodeLineList
         data.fLineList.clear()
@@ -98,7 +99,7 @@ class EditableShadingNodeDrawOverride(OMR.MPxDrawOverride):
 
     def addUIDrawables(self, objPath, drawManager, frameContext, data):
         drawdata = data
-        if not isinstance(drawdata, EditableShadingNodeDrawData):
+        if not isinstance(drawdata, ShadingLocatorNodeDrawData):
             return
 
         print('linelist: {}'.format(drawdata.fLineList))
@@ -108,5 +109,5 @@ class EditableShadingNodeDrawOverride(OMR.MPxDrawOverride):
         drawManager.mesh(OMR.MUIDrawManager.kLines, drawdata.fLineList)
         drawManager.endDrawable()
 
-# EditableShadingNode end
+# ShadingLocatorNode end
 ######################################################################################

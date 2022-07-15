@@ -41,7 +41,8 @@ if test_env and sys.version_info.major == 2:
 from src.toolbar import EditableShadingShelf, EditableShadingMenu
 import src.commands as commands
 from src.commands import *
-from src.nodes import *
+from src.locator import *
+from src.render import *
 
 # Get all MPxCommand classes
 def getCommands():
@@ -69,26 +70,41 @@ def deregisterCommands(plugin_fn):
             )
 
 def registerNodes(plugin_fn):
+    # Locator node
     try:
-        plugin_fn.registerNode('editableShadingNode', EditableShadingNode.id, 
-        EditableShadingNode.creator, EditableShadingNode.initialize, 
-        OpenMaya.MPxNode.kLocatorNode, EditableShadingNode.drawDbClassification)
+        plugin_fn.registerNode('shadingLocatorNode', ShadingLocatorNode.id,                               \
+                                ShadingLocatorNode.creator, ShadingLocatorNode.initialize,                \
+                                OpenMaya.MPxNode.kLocatorNode, ShadingLocatorNode.drawDbClassification)
     except:
-        OpenMaya.MGlobal.displayError("Failed to register node EditableShadingNode")
+        OpenMaya.MGlobal.displayError("Failed to register node ShadingLocatorNode")
     try:
-        OMR.MDrawRegistry.registerDrawOverrideCreator(EditableShadingNode.drawDbClassification, EditableShadingNode.drawRegistrantId, EditableShadingNodeDrawOverride.creator)
+        OMR.MDrawRegistry.registerDrawOverrideCreator(ShadingLocatorNode.drawDbClassification, ShadingLocatorNode.drawRegistrantId, ShadingLocatorNodeDrawOverride.creator)
     except:
-        OpenMaya.MGlobal.displayError("Failed to register draw override EditableShadingNodeDrawOverride")
+        OpenMaya.MGlobal.displayError("Failed to register draw override ShadingLocatorNodeDrawOverride")
+    # Shader node
+    try:
+        userClassify = "shader/surface:" + EditableToonShader.sDbClassification
+        plugin_fn.registerNode('editableToonShader', EditableToonShader.id,                          \
+                                EditableToonShader. creator, EditableToonShader.initialize,          \
+                                OpenMaya.MPxNode.kDependNode, userClassify)
+    except:
+        OpenMaya.MGlobal.displayError("Failed to register node EditableToonShader")
+    try:
+        OMR.MDrawRegistry.registerSurfaceShadingNodeOverrideCreator(EditableToonShader.sDbClassification, EditableToonShader.sRegistrantId, EditableToonShaderOverride.creator)
+    except:
+        OpenMaya.MGlobal.displayError("Failed to register shading override EditableToonShaderOverride")
 
 def deregisterNodes(plugin_fn):
+    # Locator node
     try: 
-        plugin_fn.deregisterNode(EditableShadingNode.id)
+        plugin_fn.deregisterNode(ShadingLocatorNode.id)
     except:
-        OpenMaya.MGlobal.displayError("Failed to deregister node EditableShadingNode")
+        OpenMaya.MGlobal.displayError("Failed to deregister node ShadingLocatorNode")
     try:
-        OMR.MDrawRegistry.deregisterDrawOverrideCreator(EditableShadingNode.drawDbClassification, EditableShadingNode.drawRegistrantId)
+        OMR.MDrawRegistry.deregisterDrawOverrideCreator(ShadingLocatorNode.drawDbClassification, ShadingLocatorNode.drawRegistrantId)
     except:
-        OpenMaya.MGlobal.displayError("Failed to deregister draw override EditableShadingNodeDrawOverride")
+        OpenMaya.MGlobal.displayError("Failed to deregister draw override ShadingLocatorNodeDrawOverride")
+    # Shader node
 
 
 
