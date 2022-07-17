@@ -1,10 +1,4 @@
 //////// tweakables
-Texture2D BaseTexture : Color
-<
-    string UIName = "Base Color Map";
-    int mipmaplevels = 0;
->;
-
 Texture2D NormalMap
 <
     string UIName = "Normal Map";
@@ -19,15 +13,6 @@ float ShadeThreshold
     float UIMax = 1.000;
     float UIStep = 0.001;
 > = 0.5f;
-
-float ShadeIntensityRatio
-<
-    string UIName = "Shade Intensity Ratio";
-    string UIWidget = "Slider";
-    float UIMin = 0.000;
-    float UIMax = 1.000;
-    float UIStep = 0.001;
-> = 0.2f;
 
 float DiffuseSmoothness
 <
@@ -64,24 +49,17 @@ float4 lightDir : DIRECTION
 	string Space = "World";
 > = { 100.0f, 100.0f, 100.0f, 0.0f };
 
-float4 lightColor : LIGHTCOLOR
-<
-    string UIName = "Light 0 Color";
-	string Object = "Light0_Directional";
-    string UIWidget = "Color";
-> = { 1.0f, 1.0f, 1.0f, 1.0f};
+// Texture2D lightShadowMap : SHADOWMAP
+// <
+// 	string Object = "Light0_Directional";
+// 	string UIWidget = "None";
+// >;
 
-Texture2D lightShadowMap : SHADOWMAP
-<
-	string Object = "Light0_Directional";
-	string UIWidget = "None";
->;
-
-float4x4 lightMatrix : SHADOWMAPMATRIX		
-< 
-    string Object = "Light0_Directional";
-    string UIWidget = "None"; 
->;
+// float4x4 lightMatrix : SHADOWMAPMATRIX		
+// < 
+//     string Object = "Light0_Directional";
+//     string UIWidget = "None"; 
+// >;
 
 #define SHADOW_FILTER_TAPS_CNT 10
 float2 SuperFilterTaps[SHADOW_FILTER_TAPS_CNT] 
@@ -106,22 +84,16 @@ float shadowMapTexelSize
 	string UIWidget = "None"; 
 > = {0.00195313}; // (1.0f / 512)
 
-float shadowDepthBias : ShadowMapBias
-<
-    string UIGroup = "Lighting";
-    string UIWidget = "Slider";
-    float UIMin = 0.000;
-    float UISoftMax = 0.1;
-    float UIStep = 0.001;
-    string UIName = "Shadow Bias";
-> = {0.01f};
+// float shadowDepthBias : ShadowMapBias
+// <
+//     string UIGroup = "Lighting";
+//     string UIWidget = "Slider";
+//     float UIMin = 0.000;
+//     float UISoftMax = 0.1;
+//     float UIStep = 0.001;
+//     string UIName = "Shadow Bias";
+// > = {0.01f};
 
-bool LinearSpaceLighting
-<
-    string UIGroup = "Lighting";
-    string UIName = "Linear Space Lighting";
-    int UIOrder = 10;
-> = true;
 
 //////// auto-tracked tweakables
 // transform object vertices to world-space:
@@ -133,7 +105,6 @@ float4x4 gWvpXf : WorldViewProjection < string UIWidget="None"; >;
 // provide tranform from "view" or "eye" coords back to world-space:
 float4x4 gViewIXf : ViewInverse < string UIWidget="None"; >;
 
-bool MayaFullScreenGamma : MayaGammaCorrection < string UIWidget = "None"; >;
 
 // input from application
 struct app2vertex
@@ -156,43 +127,43 @@ struct vertex2pixel
     float3 worldPosition : TEXCOORD4;
 };
 
-float lightShadow(float4x4 LightViewPrj, uniform Texture2D ShadowMapTexture, float3 VertexWorldPosition)
-{	
-	float shadow = 1.0f;
+// float lightShadow(float4x4 LightViewPrj, uniform Texture2D ShadowMapTexture, float3 VertexWorldPosition)
+// {	
+// 	float shadow = 1.0f;
 
-	float4 Pndc = mul( float4(VertexWorldPosition.xyz,1.0) ,  LightViewPrj); 
-	Pndc.xyz /= Pndc.w; 
-	if ( Pndc.x > -1.0f && Pndc.x < 1.0f && Pndc.y  > -1.0f   
-		&& Pndc.y <  1.0f && Pndc.z >  0.0f && Pndc.z <  1.0f ) 
-	{ 
-		float2 uv = 0.5f * Pndc.xy + 0.5f; 
-		uv = float2(uv.x,(1.0-uv.y));	// maya flip Y
-		float z = Pndc.z - shadowDepthBias / Pndc.w; 
+// 	float4 Pndc = mul( float4(VertexWorldPosition.xyz,1.0) ,  LightViewPrj); 
+// 	Pndc.xyz /= Pndc.w; 
+// 	if ( Pndc.x > -1.0f && Pndc.x < 1.0f && Pndc.y  > -1.0f   
+// 		&& Pndc.y <  1.0f && Pndc.z >  0.0f && Pndc.z <  1.0f ) 
+// 	{ 
+// 		float2 uv = 0.5f * Pndc.xy + 0.5f; 
+// 		uv = float2(uv.x,(1.0-uv.y));	// maya flip Y
+// 		float z = Pndc.z - shadowDepthBias / Pndc.w; 
 
-		// we'll sample a bunch of times to smooth our shadow a little bit around the edges:
-		shadow = 0.0f;
-		for(int i=0; i<SHADOW_FILTER_TAPS_CNT; ++i) 
-		{ 
-			float2 suv = uv + (SuperFilterTaps[i] * shadowMapTexelSize);
-			float val = z - ShadowMapTexture.SampleLevel(SamplerShadowDepth, suv, 0 ).x;
-			shadow += (val >= 0.0f) ? 0.0f : (1.0f / SHADOW_FILTER_TAPS_CNT);
-		}
+// 		// we'll sample a bunch of times to smooth our shadow a little bit around the edges:
+// 		shadow = 0.0f;
+// 		for(int i=0; i<SHADOW_FILTER_TAPS_CNT; ++i) 
+// 		{ 
+// 			float2 suv = uv + (SuperFilterTaps[i] * shadowMapTexelSize);
+// 			float val = z - ShadowMapTexture.SampleLevel(SamplerShadowDepth, suv, 0 ).x;
+// 			shadow += (val >= 0.0f) ? 0.0f : (1.0f / SHADOW_FILTER_TAPS_CNT);
+// 		}
 
-		// a single sample would be:
-		// shadow = 1.0f;
-		// float val = z - ShadowMapTexture.SampleLevel(SamplerShadowDepth, uv, 0 ).x;
-		// shadow = (val >= 0.0f)? 0.0f : 1.0f;
+// 		// a single sample would be:
+// 		// shadow = 1.0f;
+// 		// float val = z - ShadowMapTexture.SampleLevel(SamplerShadowDepth, uv, 0 ).x;
+// 		// shadow = (val >= 0.0f)? 0.0f : 1.0f;
 		
-		// shadow = lerp(1.0f, shadow, shadowMultiplier);  
-	} 
+// 		// shadow = lerp(1.0f, shadow, shadowMultiplier);  
+// 	} 
 
-	return shadow;
-}
+// 	return shadow;
+// }
 
 /*********************************/
 /********VERTEX SHADER**********/
 /*********************************/
-vertex2pixel vertex(app2vertex IN)
+vertex2pixel VS_ShadingMap(app2vertex IN)
 {
     vertex2pixel Out = (vertex2pixel)0;
     Out.position = mul(IN.position, gWvpXf);
@@ -207,24 +178,18 @@ vertex2pixel vertex(app2vertex IN)
 /*********************************/
 /********PIXEL SHADER**********/
 /*********************************/
-float4 pixel2tones(vertex2pixel IN) : COLOR
+float PS_2ShadingMap(vertex2pixel IN) : SV_TARGET
 {
-    float4 col = BaseTexture.Sample(TextureSampler, IN.texCoord);
     float3 normal = NormalMap.Sample(TextureSampler, IN.texCoord).xyz * 2 - 1;
     float3 N = (normal.z * IN.worldNormal) + (normal.y * IN.worldBinormal) + (normal.x * IN.worldTangent);
     N = normalize(N);
     float3 L = normalize(lightDir.xyz);
     float diffuse = dot(N, L);
-    float shadow = lightShadow(lightMatrix, lightShadowMap, IN.worldPosition);
+    // float shadow = lightShadow(lightMatrix, lightShadowMap, IN.worldPosition);
     float diffuseSmooth = pow(DiffuseSmoothness, 5);
     float smoothedDiffuse = smoothstep(ShadeThreshold-diffuseSmooth, ShadeThreshold+diffuseSmooth, diffuse);
-    col *= lerp(ShadeIntensityRatio, 1.0f, smoothedDiffuse*shadow) * lightColor;
-
-	float gammaCorrection = lerp(1.0, 2.2, LinearSpaceLighting);
-    if (!MayaFullScreenGamma)
-		col = pow(col, 1/gammaCorrection);
-    
-    return col;
+    float result = lerp(0.0f, 1.0f, smoothedDiffuse/**shadow*/);
+    return result;
 }
 
 
@@ -232,8 +197,8 @@ technique10 TwoTones
 {
     pass p0
     {
-        SetVertexShader(CompileShader(vs_4_0, vertex()));
+        SetVertexShader(CompileShader(vs_4_0, VS_ShadingMap()));
         SetGeometryShader(NULL);
-        SetPixelShader(CompileShader(ps_4_0, pixel2tones()));
+        SetPixelShader(CompileShader(ps_4_0, PS_2ShadingMap()));
     }
 }
