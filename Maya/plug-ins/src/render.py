@@ -1,6 +1,8 @@
 import maya.api.OpenMaya as om
 import maya.api.OpenMayaRender as omr
 
+import utils
+
 class EditableToonShader(om.MPxNode):
     id = om.MTypeId(0x00070010)
     sDbClassification = "drawdb/shader/surface/editableToonShader"
@@ -128,6 +130,11 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
         omr.MPxSurfaceShadingNodeOverride.__init__(self, obj)
 
         # Register fragments with the manager
+        shaderMgr = omr.MRenderer.getShaderManager()
+        fragmentMgr = omr.MRenderer.getFragmentManager()
+        if shaderMgr and fragmentMgr:
+            shaderMgr.addShaderPath(utils.getShaderDirPath())
+            fragmentMgr.addFragmentPath(utils.getFragmentDirPath())
 
     def supportedDrawAPIs(self):
         return omr.MRenderer.kOpenGL | omr.MRenderer.kOpenGLCoreProfile | omr.MRenderer.kDirectX11

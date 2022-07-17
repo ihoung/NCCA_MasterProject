@@ -13,5 +13,8 @@ def getImgPath(imgName):
     icon_dir = os.path.join(getRootPath(), 'icons')
     return os.path.join(icon_dir, imgName+'.png')
 
-def getShaderPath(shaderName):
-    return os.path.join(getRootPath(), 'shaders', shaderName)
+def getFragmentDirPath():
+    return os.path.join(getRootPath(), 'fragments')
+
+def getShaderDirPath():
+    return os.path.join(getRootPath(), 'shaders')
