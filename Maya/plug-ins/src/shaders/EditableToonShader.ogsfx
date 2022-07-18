@@ -1,17 +1,17 @@
 //////// tweakables
-Texture2D BaseTexture : Color
+uniform texture2D BaseTexture : Color
 <
     string UIName = "Base Color Map";
     int mipmaplevels = 0;
 >;
 
-Texture2D ShadingMap
+uniform texture2D ShadingMap
 <
 	string UIWidget = "None"; 
     int mipmaplevels = 0;
 >;
 
-float ShadeIntensityRatio
+uniform float ShadeIntensityRatio
 <
     string UIName = "Shade Intensity Ratio";
     string UIWidget = "Slider";
@@ -21,25 +21,11 @@ float ShadeIntensityRatio
 > = 0.2f;
 
 /// Samplers
-SamplerState TextureSampler
-{
-
-    Filter = COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
-	AddressU = Wrap;
-	AddressV = Wrap;
-    ComparisonFunc = LESS;
-};
-
-SamplerState SamplerShadowDepth
-{
-	Filter = MIN_MAG_MIP_POINT;
-	AddressU = Border;
-	AddressV = Border;
-	BorderColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
-};
+uniform sampler2D baseColorSamp = sampler_state { texture = <BaseTexture>; };
+uniform sampler2D shadingMapSamp = sampler_state { texture = <ShadingMap>; };
 
 /// light
-float4 lightColor : LIGHTCOLOR
+vec4 lightColor : LIGHTCOLOR
 <
     string UIName = "Light 0 Color";
 	string Object = "Light0_Directional";
@@ -91,7 +77,7 @@ float4 lightColor : LIGHTCOLOR
 //     string UIName = "Shadow Bias";
 // > = {0.01f};
 
-bool LinearSpaceLighting
+uniform bool LinearSpaceLighting
 <
     string UIGroup = "Lighting";
     string UIName = "Linear Space Lighting";
@@ -100,28 +86,32 @@ bool LinearSpaceLighting
 
 //////// auto-tracked tweakables
 // transform object vertices to world-space:
-float4x4 gWorldXf : World < string UIWidget="None"; >;
+uniform mat4 gWorldXf : World;
 // transform object normals, tangents, & binormals to world-space:
-float4x4 gWorldITXf : WorldInverseTranspose < string UIWidget="None"; >;
+uniform mat4 gWorldITXf : WorldInverseTranspose;
 // transform object vertices to view space and project them in perspective:
-float4x4 gWvpXf : WorldViewProjection < string UIWidget="None"; >;
+uniform mat4 gWvpXf : WorldViewProjection;
 // provide tranform from "view" or "eye" coords back to world-space:
-float4x4 gViewIXf : ViewInverse < string UIWidget="None"; >;
+uniform mat4 gViewIXf : ViewInverse;
 
-bool MayaFullScreenGamma : MayaGammaCorrection < string UIWidget = "None"; >;
+uniform bool MayaFullScreenGamma : MayaGammaCorrection;
 
 // input from application
-struct app2vertex
+attribute app2vertex
 {
-    float4 position : POSITION;
-    float2 texCoord : TEXCOORD0;
+    vec4 position : POSITION;
+    vec2 texCoord : TEXCOORD0;
 };
 
 // output to pixel shader
-struct vertex2pixel
+attribute vertex2pixel
 {
-    float4 position : POSITION;
-    float2 texCoord : TEXCOORD0;
+    vec2 VSUV : TEXCOORD0;
+};
+
+attribute pixelOut
+{
+    vec4 colorOut : COLOR0;
 };
 
 // float lightShadow(float4x4 LightViewPrj, uniform Texture2D ShadowMapTexture, float3 VertexWorldPosition)
@@ -160,37 +150,40 @@ struct vertex2pixel
 /*********************************/
 /********VERTEX SHADER**********/
 /*********************************/
-vertex2pixel vertex(app2vertex IN)
+GLSLShader vertex
 {
-    vertex2pixel Out = (vertex2pixel)0;
-    Out.position = mul(IN.position, gWvpXf);
-    Out.texCoord = float2(IN.texCoord.x, 1.0-IN.texCoord.y);
-    return Out; 
+    void main()
+    {    
+        gl_Position = mul(position, gWvpXf);
+        VSUV = float2(texCoord.x, 1.0-texCoord.y);
+    }
 }
 
 /*********************************/
 /********PIXEL SHADER**********/
 /*********************************/
-float4 pixel2tones(vertex2pixel IN) : COLOR
+GLSLShader pixel2tones
 {
-    float4 col = BaseTexture.Sample(TextureSampler, IN.texCoord);
-    float diffuse = ShadingMap.Sample(TextureSampler. IN.texCoord);
-    col *= lerp(ShadeIntensityRatio, 1.0f, diffuse) * lightColor;
+    void main()
+    {    
+        vec4 col = texture2DLod(baseColorSamp, VSUV, 0.0);
+        float diffuse = texture2DLod(shadingMapSamp. VSUV, 0.0);
+        col *= lerp(ShadeIntensityRatio, 1.0f, diffuse) * lightColor;
 
-	float gammaCorrection = lerp(1.0, 2.2, LinearSpaceLighting);
-    if (!MayaFullScreenGamma)
-		col = pow(col, 1/gammaCorrection);
-    
-    return col;
+        float gammaCorrection = lerp(1.0, 2.2, LinearSpaceLighting);
+        if (!MayaFullScreenGamma)
+            col = pow(col, 1/gammaCorrection);
+        
+        colorOut = col;
+    }
 }
 
 
-technique10 TwoTones
+technique TwoTones
 {
     pass p0
     {
-        SetVertexShader(CompileShader(vs_4_0, vertex()));
-        SetGeometryShader(NULL);
-        SetPixelShader(CompileShader(ps_4_0, pixel2tones()));
+        VertexShader(in app2vertex, out vertex2pixel) = vertex;
+        PixelShader(in vertex2pixel, out pixelOut) = pixel2tones;
     }
 }

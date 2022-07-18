@@ -14,7 +14,7 @@ class EditableToonShader(om.MPxNode):
     aShadeThreshold = None
     aShadeIntensityRatio = None
     aDiffuseSmoothness = None
-    aShadowDepthBias = None
+    # aShadowDepthBias = None
     aLinearSpaceLighting = None
 
     # Output attributes
@@ -70,14 +70,14 @@ class EditableToonShader(om.MPxNode):
         nAttr.setMax(1.0)
         nAttr.default = 0.4
 
-        EditableToonShader.aShadowDepthBias = nAttr.create("shadowDepthBias", "sd", om.MFnNumericData.kFloat)
-        nAttr.keyable = True
-        nAttr.storable = True
-        nAttr.readable = True
-        nAttr.writable = True
-        nAttr.setMin(0.0)
-        nAttr.setMax(1.0)
-        nAttr.default = 0.2
+        # EditableToonShader.aShadowDepthBias = nAttr.create("shadowDepthBias", "sd", om.MFnNumericData.kFloat)
+        # nAttr.keyable = True
+        # nAttr.storable = True
+        # nAttr.readable = True
+        # nAttr.writable = True
+        # nAttr.setMin(0.0)
+        # nAttr.setMax(1.0)
+        # nAttr.default = 0.2
 
         EditableToonShader.aLinearSpaceLighting = nAttr.create("linearSpaceLighting", "lsl", om.MFnNumericData.kBoolean)
         nAttr.keyable = True
@@ -98,7 +98,7 @@ class EditableToonShader(om.MPxNode):
         om.MPxNode.addAttribute(EditableToonShader.aShadeThreshold)
         om.MPxNode.addAttribute(EditableToonShader.aShadeIntensityRatio)
         om.MPxNode.addAttribute(EditableToonShader.aDiffuseSmoothness)
-        om.MPxNode.addAttribute(EditableToonShader.aShadowDepthBias)
+        # om.MPxNode.addAttribute(EditableToonShader.aShadowDepthBias)
         om.MPxNode.addAttribute(EditableToonShader.aLinearSpaceLighting)
         om.MPxNode.addAttribute(EditableToonShader.aOutColor)
 
@@ -107,7 +107,7 @@ class EditableToonShader(om.MPxNode):
         om.MPxNode.attributeAffects(EditableToonShader.aShadeThreshold, EditableToonShader.aOutColor)
         om.MPxNode.attributeAffects(EditableToonShader.aShadeIntensityRatio, EditableToonShader.aOutColor)
         om.MPxNode.attributeAffects(EditableToonShader.aDiffuseSmoothness, EditableToonShader.aOutColor)
-        om.MPxNode.attributeAffects(EditableToonShader.aShadowDepthBias, EditableToonShader.aOutColor)
+        # om.MPxNode.attributeAffects(EditableToonShader.aShadowDepthBias, EditableToonShader.aOutColor)
         om.MPxNode.attributeAffects(EditableToonShader.aLinearSpaceLighting, EditableToonShader.aOutColor)
 
     def __init__(self):
@@ -137,6 +137,10 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
             fragmentMgr.addFragmentPath(utils.getFragmentDirPath())
             if not fragmentMgr.hasFragment("ETS_RenderGraph"):
                 fragmentMgr.addFragmentGraphFromFile("ETS_RenderGraph.xml")
+            if not fragmentMgr.hasFragment("ETS_ShadingMapFragment"):
+                fragmentMgr.addShadeFragmentFromFile("ETS_ShadingMapFragment", False)
+            if not fragmentMgr.hasFragment("ETS_ToonFragment"):
+                fragmentMgr.addShadeFragmentFromFile("ETS_ToonFragment", False)
 
     def supportedDrawAPIs(self):
         return omr.MRenderer.kOpenGL | omr.MRenderer.kOpenGLCoreProfile | omr.MRenderer.kDirectX11

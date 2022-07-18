@@ -1,0 +1,30 @@
+<fragment  uiName="ETS_ToonFragment" name="ETS_ToonFragment" type="plumbing" class="ScriptFragment" version="1.0" feature_level="20" >
+    <description>
+<![CDATA[
+Toon renderer. Uses pre-processed shade map to render the final shading color.]]>
+</description>
+    <properties>
+        <target  name="BaseTexture" />
+        <target  name="ShadingMap" />
+        <float  name="ShadeIntensityRatio" />
+        <bool  name="LinearSpaceLighting" />
+    </properties>
+    <values>
+<float name="ShadeIntensityRatio" value="0.200000"  />
+<bool name="LinearSpaceLighting" value="true"  />
+    </values>
+    <outputs>
+        <target  name="output" />
+    </outputs>
+    <parametershare>
+    </parametershare>
+    <implementation render="OGS" language="ScriptInterpreter" version="0.1" >
+        <scriptCommands>
+            <SetEffect name="EditableToonShader" path="EditableToonShader" technique="TwoTones" />
+            <SetTexture effect="EditableToonShader" name="BaseTexture" value="PointClamp" texture="@BaseTexture" />
+            <SetEffectParameter effect="EditableToonShader" name="ShadeIntensityRatio" value="@ShadeIntensityRatio" />
+            <SetEffectParameter effect="EditableToonShader" name="LinearSpaceLighting" value="@LinearSpaceLighting" />
+        </scriptCommands>
+    </implementation>
+</fragment>
+

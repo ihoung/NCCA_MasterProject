@@ -19,11 +19,10 @@ Toon renderer. Uses pre-processed shade map to render the final shading color.]]
     </parametershare>
     <implementation render="OGS" language="ScriptInterpreter" version="0.1" >
         <scriptCommands>
-            <SetEffect name="ShadingMap" path="EditableShadingMap" technique="TwoTones" />
-            <SetTexture effect="ShadingMap" name="NormalMap" value="PointClamp" texture="@NormalMap" />
-            <SetEffectParameter effect="ShadingMap" name="ShadeThreshold" value="@ShadeThreshold" />
-            <SetEffectParameter effect="ShadingMap" name="DiffuseSmoothness" value="@DiffuseSmoothness" />
-            <RestoreOverrideEffect />
+            <SetEffect name="ShadingMap2Tones" path="EditableShadingMap" technique="TwoTones" />
+            <SetTexture effect="ShadingMap2Tones" name="NormalMap" value="PointClamp" texture="@NormalMap" />
+            <SetEffectParameter effect="ShadingMap2Tones" name="ShadeThreshold" value="@ShadeThreshold" />
+            <SetEffectParameter effect="ShadingMap2Tones" name="DiffuseSmoothness" value="@DiffuseSmoothness" />
         </scriptCommands>
     </implementation>
 </fragment>
