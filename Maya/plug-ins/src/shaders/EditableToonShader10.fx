@@ -192,15 +192,8 @@ vertex2pixel vertex(app2vertex IN)
 float4 pixel2tones(vertex2pixel IN) : COLOR
 {
     float4 col = BaseTexture.Sample(TextureSampler, IN.texCoord);
-    float3 normal = NormalMap.Sample(TextureSampler, IN.texCoord).xyz * 2 - 1;
-    float3 N = (normal.z * IN.worldNormal) + (normal.y * IN.worldBinormal) + (normal.x * IN.worldTangent);
-    N = normalize(N);
-    float3 L = normalize(lightDir.xyz);
-    float diffuse = dot(N, L);
-    float shadow = lightShadow(lightMatrix, lightShadowMap, IN.worldPosition);
-    float diffuseSmooth = pow(DiffuseSmoothness, 5);
-    float smoothedDiffuse = smoothstep(ShadeThreshold-diffuseSmooth, ShadeThreshold+diffuseSmooth, diffuse);
-    col *= lerp(ShadeIntensityRatio, 1.0f, smoothedDiffuse*shadow) * lightColor;
+    float diffuse = ShadingMap.Sample(TextureSampler. IN.texCoord);
+    col *= lerp(ShadeIntensityRatio, 1.0f, diffuse) * lightColor;
 
 	float gammaCorrection = lerp(1.0, 2.2, LinearSpaceLighting);
     if (!MayaFullScreenGamma)
