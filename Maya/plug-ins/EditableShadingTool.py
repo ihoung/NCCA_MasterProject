@@ -105,7 +105,14 @@ def deregisterNodes(plugin_fn):
     except:
         OpenMaya.MGlobal.displayError("Failed to deregister draw override ShadingLocatorNodeDrawOverride")
     # Shader node
-
+    try:
+        plugin_fn.deregisterNode(EditableToonShader.id)
+    except:
+        OpenMaya.MGlobal.displayError("Failed to deregister node EditableToonShader")
+    try:
+        OMR.MDrawRegistry.deregisterSurfaceShadingNodeOverrideCreator(EditableToonShader.sDbClassification, EditableToonShader.sRegistrantId)
+    except:
+        OpenMaya.MGlobal.displayError("Failed to deregister draw override EditableToonShaderOverride")
 
 
 def initializePlugin(plugin):

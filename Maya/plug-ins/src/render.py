@@ -14,6 +14,7 @@ class EditableToonShader(om.MPxNode):
     aShadeThreshold = None
     aShadeIntensityRatio = None
     aDiffuseSmoothness = None
+    aLightDirection = None
     # aShadowDepthBias = None
     aLinearSpaceLighting = None
 
@@ -70,6 +71,13 @@ class EditableToonShader(om.MPxNode):
         nAttr.setMax(1.0)
         nAttr.default = 0.4
 
+        EditableToonShader.aLightDirection = nAttr.createPoint( "lightDirection", "ld" )
+        nAttr.storable = False
+        nAttr.hidden = True
+        nAttr.readable = True
+        nAttr.writable = False
+        nAttr.default = (1.0, 1.0, 1.0)
+
         # EditableToonShader.aShadowDepthBias = nAttr.create("shadowDepthBias", "sd", om.MFnNumericData.kFloat)
         # nAttr.keyable = True
         # nAttr.storable = True
@@ -98,6 +106,7 @@ class EditableToonShader(om.MPxNode):
         om.MPxNode.addAttribute(EditableToonShader.aShadeThreshold)
         om.MPxNode.addAttribute(EditableToonShader.aShadeIntensityRatio)
         om.MPxNode.addAttribute(EditableToonShader.aDiffuseSmoothness)
+        om.MPxNode.addAttribute(EditableToonShader.aLightDirection)
         # om.MPxNode.addAttribute(EditableToonShader.aShadowDepthBias)
         om.MPxNode.addAttribute(EditableToonShader.aLinearSpaceLighting)
         om.MPxNode.addAttribute(EditableToonShader.aOutColor)
@@ -107,6 +116,7 @@ class EditableToonShader(om.MPxNode):
         om.MPxNode.attributeAffects(EditableToonShader.aShadeThreshold, EditableToonShader.aOutColor)
         om.MPxNode.attributeAffects(EditableToonShader.aShadeIntensityRatio, EditableToonShader.aOutColor)
         om.MPxNode.attributeAffects(EditableToonShader.aDiffuseSmoothness, EditableToonShader.aOutColor)
+        om.MPxNode.attributeAffects(EditableToonShader.aLightDirection, EditableToonShader.aOutColor)
         # om.MPxNode.attributeAffects(EditableToonShader.aShadowDepthBias, EditableToonShader.aOutColor)
         om.MPxNode.attributeAffects(EditableToonShader.aLinearSpaceLighting, EditableToonShader.aOutColor)
 
@@ -117,14 +127,27 @@ class EditableToonShader(om.MPxNode):
         if (plug != EditableToonShader.aOutColor) and (plug.parent() != EditableToonShader.aOutColor):
             return None
 
-    def postConstructor(self):
-        self.setMPSafe(True)
+        baseColor = block.inputValue(EditableToonShader.aBaseColor).asFloatVector()
+        normalMap = block.inputValue(EditableToonShader.aNormalMap).asFloatVector()
+        shadeThreshold = block.inputValue(EditableToonShader.aShadeThreshold).asFloat()
+        shadeIntensityRatio = block.inputValue(EditableToonShader.aShadeIntensityRatio).asFloat()
+        diffuseSmoothness = block.inputValue(EditableToonShader.aDiffuseSmoothness).asFloat()
+        lightDirection = block.inputValue(EditableToonShader.aLightDirection).asFloatVector()
+
+        resultColor = baseColor
+
+        outColorHandle = block.outputValue(EditableToonShader.aOutColor)
+        outColorHandle.setMFloatVector(resultColor)
+        outColorHandle.setClean()
+
+    # def postConstructor(self):
+    #     self.setMPSafe(True)
 
 
 class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
     @staticmethod
     def creator(obj):
-        return omr.MPxSurfaceShadingNodeOverride(obj)
+        return EditableToonShaderOverride(obj)
 
     def __init__(self, obj):
         omr.MPxSurfaceShadingNodeOverride.__init__(self, obj)
@@ -138,9 +161,9 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
             if not fragmentMgr.hasFragment("ETS_RenderGraph"):
                 fragmentMgr.addFragmentGraphFromFile("ETS_RenderGraph.xml")
             if not fragmentMgr.hasFragment("ETS_ShadingMapFragment"):
-                fragmentMgr.addShadeFragmentFromFile("ETS_ShadingMapFragment", False)
+                fragmentMgr.addShadeFragmentFromFile("ETS_ShadingMapFragment.xml", False)
             if not fragmentMgr.hasFragment("ETS_ToonFragment"):
-                fragmentMgr.addShadeFragmentFromFile("ETS_ToonFragment", False)
+                fragmentMgr.addShadeFragmentFromFile("ETS_ToonFragment.xml", False)
 
     def supportedDrawAPIs(self):
         return omr.MRenderer.kOpenGL | omr.MRenderer.kOpenGLCoreProfile | omr.MRenderer.kDirectX11
