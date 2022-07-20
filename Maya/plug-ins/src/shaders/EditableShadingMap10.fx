@@ -1,9 +1,5 @@
 //////// tweakables
-Texture2D NormalMap
-<
-    string UIName = "Normal Map";
-    int mipmaplevels = 0;
->;
+float3 NormalMap;
 
 float ShadeThreshold
 <
@@ -23,15 +19,15 @@ float DiffuseSmoothness
     float UIStep = 0.001;
 > = 0.4f;
 
-/// Samplers
-SamplerState TextureSampler
-{
+// /// Samplers
+// SamplerState TextureSampler
+// {
 
-    Filter = COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
-	AddressU = Wrap;
-	AddressV = Wrap;
-    ComparisonFunc = LESS;
-};
+//     Filter = COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+// 	AddressU = Wrap;
+// 	AddressV = Wrap;
+//     ComparisonFunc = LESS;
+// };
 
 SamplerState SamplerShadowDepth
 {
@@ -178,10 +174,9 @@ vertex2pixel VS_ShadingMap(app2vertex IN)
 /*********************************/
 /********PIXEL SHADER**********/
 /*********************************/
-float PS_2ShadingMap(vertex2pixel IN) : SV_TARGET
+float4 PS_2ShadingMap(vertex2pixel IN) : SV_TARGET
 {
-    float3 normal = NormalMap.Sample(TextureSampler, IN.texCoord).xyz * 2 - 1;
-    float3 N = (normal.z * IN.worldNormal) + (normal.y * IN.worldBinormal) + (normal.x * IN.worldTangent);
+    float3 N = (NormalMap.z * IN.worldNormal) + (NormalMap.y * IN.worldBinormal) + (NormalMap.x * IN.worldTangent);
     N = normalize(N);
     float3 L = normalize(lightDir.xyz);
     float diffuse = dot(N, L);
@@ -189,7 +184,7 @@ float PS_2ShadingMap(vertex2pixel IN) : SV_TARGET
     float diffuseSmooth = pow(DiffuseSmoothness, 5);
     float smoothedDiffuse = smoothstep(ShadeThreshold-diffuseSmooth, ShadeThreshold+diffuseSmooth, diffuse);
     float result = lerp(0.0f, 1.0f, smoothedDiffuse/**shadow*/);
-    return result;
+    return float4(result, 0.0f, 0.0f, 1.0f);
 }
 
 

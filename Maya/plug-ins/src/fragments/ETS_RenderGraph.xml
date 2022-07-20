@@ -8,8 +8,8 @@
         <connect from="ETS_ShadingMap.output" to="ETS_Toon.ShadingMap" name="shadingMap" />
     </connections>
     <properties>
-        <target  name="baseColor" ref="ETS_Toon.BaseTexture" />
-        <target  name="normalMap" ref="ETS_ShadingMap.NormalMap" />
+        <float3  name="baseColor" ref="ETS_Toon.BaseColor" />
+        <float3  name="normalMap" ref="ETS_ShadingMap.NormalMap" />
         <float  name="shadeThreshold" ref="ETS_ShadingMap.ShadeThreshold" />
         <float  name="diffuseSmoothness" ref="ETS_ShadingMap.DiffuseSmoothness" />
         <float  name="shadeIntensityRatio" ref="ETS_Toon.ShadeIntensityRatio" />
@@ -19,9 +19,9 @@
 <float name="shadeThreshold" value="0.500000"  />
 <float name="diffuseSmoothness" value="0.400000"  />
 <float name="shadeIntensityRatio" value="0.200000"  />
-<float name="linearSpaceLighting" value="true"  />
+<bool name="linearSpaceLighting" value="true"  />
     </values>
     <outputs>
-        <target  name="output" ref="ETS_Toon.output" />
+        <float4  name="output" ref="ETS_Toon.output" />
     </outputs>
 </fragment_graph>

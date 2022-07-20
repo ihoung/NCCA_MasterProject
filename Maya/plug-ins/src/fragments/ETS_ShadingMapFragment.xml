@@ -4,7 +4,7 @@
 Toon renderer. Uses pre-processed shade map to render the final shading color.]]>
 </description>
     <properties>
-        <target  name="NormalMap" />
+        <float3  name="NormalMap" />
         <float  name="ShadeThreshold" />
         <float  name="DiffuseSmoothness" />
     </properties>
@@ -20,7 +20,7 @@ Toon renderer. Uses pre-processed shade map to render the final shading color.]]
     <implementation render="OGS" language="ScriptInterpreter" version="0.1" >
         <scriptCommands>
             <SetEffect name="ShadingMap2Tones" path="EditableShadingMap" technique="TwoTones" />
-            <SetTexture effect="ShadingMap2Tones" name="NormalMap" value="PointClamp" texture="@NormalMap" />
+            <SetEffectParameter effect="ShadingMap2Tones" name="NormalMap" value="@NormalMap" />
             <SetEffectParameter effect="ShadingMap2Tones" name="ShadeThreshold" value="@ShadeThreshold" />
             <SetEffectParameter effect="ShadingMap2Tones" name="DiffuseSmoothness" value="@DiffuseSmoothness" />
         </scriptCommands>

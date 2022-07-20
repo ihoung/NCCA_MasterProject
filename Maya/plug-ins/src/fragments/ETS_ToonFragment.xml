@@ -4,7 +4,7 @@
 Toon renderer. Uses pre-processed shade map to render the final shading color.]]>
 </description>
     <properties>
-        <target  name="BaseTexture" />
+        <float3  name="BaseColor" />
         <target  name="ShadingMap" />
         <float  name="ShadeIntensityRatio" />
         <bool  name="LinearSpaceLighting" />
@@ -14,16 +14,18 @@ Toon renderer. Uses pre-processed shade map to render the final shading color.]]
 <bool name="LinearSpaceLighting" value="true"  />
     </values>
     <outputs>
-        <target  name="output" />
+        <float4  name="output" />
     </outputs>
     <parametershare>
     </parametershare>
     <implementation render="OGS" language="ScriptInterpreter" version="0.1" >
         <scriptCommands>
             <SetEffect name="EditableToonShader" path="EditableToonShader" technique="TwoTones" />
-            <SetTexture effect="EditableToonShader" name="BaseTexture" value="PointClamp" texture="@BaseTexture" />
+            <SetEffectParameter effect="EditableToonShader" name="BaseColor" value="@BaseColor" />
             <SetEffectParameter effect="EditableToonShader" name="ShadeIntensityRatio" value="@ShadeIntensityRatio" />
             <SetEffectParameter effect="EditableToonShader" name="LinearSpaceLighting" value="@LinearSpaceLighting" />
+            <SetTexture effect="EditableToonShader" name="ShadingMap" value="PointClamp", texture="@ShadingMap">
+            <SetEffectParameter effect="EditableToonShader" name="shadingMapSamp" value="PointClamp" />
         </scriptCommands>
     </implementation>
 </fragment>

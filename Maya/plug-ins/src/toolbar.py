@@ -60,4 +60,4 @@ class EditableShadingCmd(object):
     @classmethod
     def addEditLocator(cls, *args):
         print('Add edit locator')
-        cmds.createNode('editableShadingNode')
+        cmds.createNode('shadingLocatorNode')

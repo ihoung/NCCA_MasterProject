@@ -160,10 +160,10 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
             fragmentMgr.addFragmentPath(utils.getFragmentDirPath())
             if not fragmentMgr.hasFragment("ETS_RenderGraph"):
                 fragmentMgr.addFragmentGraphFromFile("ETS_RenderGraph.xml")
-            if not fragmentMgr.hasFragment("ETS_ShadingMapFragment"):
-                fragmentMgr.addShadeFragmentFromFile("ETS_ShadingMapFragment.xml", False)
-            if not fragmentMgr.hasFragment("ETS_ToonFragment"):
-                fragmentMgr.addShadeFragmentFromFile("ETS_ToonFragment.xml", False)
+            # if not fragmentMgr.hasFragment("ETS_ShadingMapFragment"):
+            #     fragmentMgr.addShadeFragmentFromFile("ETS_ShadingMapFragment.xml", False)
+            # if not fragmentMgr.hasFragment("ETS_ToonFragment"):
+            #     fragmentMgr.addShadeFragmentFromFile("ETS_ToonFragment.xml", False)
 
     def supportedDrawAPIs(self):
         return omr.MRenderer.kOpenGL | omr.MRenderer.kOpenGLCoreProfile | omr.MRenderer.kDirectX11

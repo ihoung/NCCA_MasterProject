@@ -1,8 +1,4 @@
-uniform texture2D NormalMap
-<
-    string UIName = "Normal Map";
-    int mipmaplevels = 0;
->;
+uniform vec3 NormalMap;
 
 uniform float ShadeThreshold
 <
@@ -23,7 +19,7 @@ uniform float DiffuseSmoothness
 > = 0.4f;
 
 /// Samplers
-uniform sampler2D normalMapSamp = sampler_state { texture = <NormalMap>; };
+// uniform sampler2D normalMapSamp = sampler_state { texture = <NormalMap>; };
 
 // uniform sampler2D shadowDepthSamp = sampler_state {texture = <ShadowMapTexture>; };
 
@@ -113,7 +109,7 @@ attribute vertex2pixel
 
 attribute pixelOut
 {
-    float diffuseOut : COLOR0;
+    vec4 diffuseOut : COLOR0;
 };
 
 // float lightShadow(float4x4 LightViewPrj, uniform Texture2D ShadowMapTexture, float3 VertexWorldPosition)
@@ -172,15 +168,15 @@ GLSLShader PS_2ShadingMap
 {
     void main()
     {    
-        vec3 normal = texture2DLod(normalMapSamp, VSUV, 0.0).rgb * 2 - 1;
-        vec3 N = (normal.z * worldNormal) + (normal.y * worldBinormal) + (normal.x * worldTangent);
+        vec3 N = (NormalMap.z * worldNormal) + (NormalMap.y * worldBinormal) + (NormalMap.x * worldTangent);
         N = normalize(N);
         vec3 L = normalize(lightDir.xyz);
         float diffuse = dot(N, L);
         // float shadow = lightShadow(lightMatrix, lightShadowMap, IN.worldPosition);
         float diffuseSmooth = pow(DiffuseSmoothness, 5);
         float smoothedDiffuse = smoothstep(ShadeThreshold-diffuseSmooth, ShadeThreshold+diffuseSmooth, diffuse);
-        diffuseOut = lerp(0.0f, 1.0f, smoothedDiffuse/**shadow*/);
+        float result = lerp(0.0f, 1.0f, smoothedDiffuse/**shadow*/);
+        diffuseOut = vec4(result, 0.0f, 0.0f, 1.0f);
     }
 }
 

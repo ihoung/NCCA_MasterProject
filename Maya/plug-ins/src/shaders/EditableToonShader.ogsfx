@@ -1,9 +1,5 @@
 //////// tweakables
-uniform texture2D BaseTexture : Color
-<
-    string UIName = "Base Color Map";
-    int mipmaplevels = 0;
->;
+uniform vec3 BaseColor;
 
 uniform texture2D ShadingMap
 <
@@ -21,7 +17,7 @@ uniform float ShadeIntensityRatio
 > = 0.2f;
 
 /// Samplers
-uniform sampler2D baseColorSamp = sampler_state { texture = <BaseTexture>; };
+// uniform sampler2D baseColorSamp = sampler_state { texture = <BaseTexture>; };
 uniform sampler2D shadingMapSamp = sampler_state { texture = <ShadingMap>; };
 
 /// light
@@ -166,8 +162,8 @@ GLSLShader pixel2tones
 {
     void main()
     {    
-        vec4 col = texture2DLod(baseColorSamp, VSUV, 0.0);
-        float diffuse = texture2DLod(shadingMapSamp. VSUV, 0.0);
+        vec4 col = vec4(BaseColor, 1.0);
+        float diffuse = texture2DLod(shadingMapSamp. VSUV, 0.0).r;
         col *= lerp(ShadeIntensityRatio, 1.0f, diffuse) * lightColor;
 
         float gammaCorrection = lerp(1.0, 2.2, LinearSpaceLighting);

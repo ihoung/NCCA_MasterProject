@@ -1,15 +1,7 @@
 //////// tweakables
-Texture2D BaseTexture : Color
-<
-    string UIName = "Base Color Map";
-    int mipmaplevels = 0;
->;
+float3 BaseColor;
 
-Texture2D ShadingMap
-<
-	string UIWidget = "None"; 
-    int mipmaplevels = 0;
->;
+Texture2D ShadingMap;
 
 float ShadeIntensityRatio
 <
@@ -21,22 +13,15 @@ float ShadeIntensityRatio
 > = 0.2f;
 
 /// Samplers
-SamplerState TextureSampler
-{
+SamplerState shadingMapSamp;
 
-    Filter = COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
-	AddressU = Wrap;
-	AddressV = Wrap;
-    ComparisonFunc = LESS;
-};
-
-SamplerState SamplerShadowDepth
-{
-	Filter = MIN_MAG_MIP_POINT;
-	AddressU = Border;
-	AddressV = Border;
-	BorderColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
-};
+// SamplerState SamplerShadowDepth
+// {
+// 	Filter = MIN_MAG_MIP_POINT;
+// 	AddressU = Border;
+// 	AddressV = Border;
+// 	BorderColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+// };
 
 /// light
 float4 lightColor : LIGHTCOLOR
@@ -173,8 +158,8 @@ vertex2pixel vertex(app2vertex IN)
 /*********************************/
 float4 pixel2tones(vertex2pixel IN) : COLOR
 {
-    float4 col = BaseTexture.Sample(TextureSampler, IN.texCoord);
-    float diffuse = ShadingMap.Sample(TextureSampler. IN.texCoord);
+    float4 col = float4(BaseColor, 1.0f);
+    float diffuse = ShadingMap.Sample(shadingMapSamp. IN.texCoord).r;
     col *= lerp(ShadeIntensityRatio, 1.0f, diffuse) * lightColor;
 
 	float gammaCorrection = lerp(1.0, 2.2, LinearSpaceLighting);
