@@ -1,22 +1,8 @@
 uniform vec3 NormalMap;
 
-uniform float ShadeThreshold
-<
-    string UIName = "Shade Threshold";
-    string UIWidget = "Slider";
-    float UIMin = 0.000;
-    float UIMax = 1.000;
-    float UIStep = 0.001;
-> = 0.5f;
+uniform float ShadeThreshold;
 
-uniform float DiffuseSmoothness
-<
-    string UIName = "Diffuse Smoothness";
-    string UIWidget = "Slider";
-    float UIMin = 0.000;
-    float UIMax = 1.000;
-    float UIStep = 0.001;
-> = 0.4f;
+uniform float DiffuseSmoothness;
 
 /// Samplers
 // uniform sampler2D normalMapSamp = sampler_state { texture = <NormalMap>; };
@@ -61,10 +47,10 @@ uniform vec2 SuperFilterTaps[SHADOW_FILTER_TAPS_CNT]
     {-0.321932f, 0.5954349f} 
 };
 
-uniform float shadowMapTexelSize 
-< 
-	string UIWidget = "None"; 
-> = {0.00195313}; // (1.0f / 512)
+// uniform float shadowMapTexelSize 
+// < 
+// 	string UIWidget = "None"; 
+// > = {0.00195313}; // (1.0f / 512)
 
 // float shadowDepthBias : ShadowMapBias
 // <
@@ -95,7 +81,7 @@ attribute app2vertex
     vec4 normal : NORMAL;
     vec4 binormal : BINORMAL0;
     vec4 tangent : TANGENT0;
-};
+}
 
 // output to pixel shader
 attribute vertex2pixel
@@ -105,12 +91,12 @@ attribute vertex2pixel
     vec3 worldBinormal : TEXCOORD2;
     vec3 worldTangent : TEXCOORD3;
     vec3 worldPosition : TEXCOORD4;
-};
+}
 
 attribute pixelOut
 {
     vec4 diffuseOut : COLOR0;
-};
+}
 
 // float lightShadow(float4x4 LightViewPrj, uniform Texture2D ShadowMapTexture, float3 VertexWorldPosition)
 // {	

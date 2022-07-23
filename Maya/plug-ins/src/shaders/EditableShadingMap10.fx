@@ -29,13 +29,13 @@ float DiffuseSmoothness
 //     ComparisonFunc = LESS;
 // };
 
-SamplerState SamplerShadowDepth
-{
-	Filter = MIN_MAG_MIP_POINT;
-	AddressU = Border;
-	AddressV = Border;
-	BorderColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
-};
+// SamplerState SamplerShadowDepth
+// {
+// 	Filter = MIN_MAG_MIP_POINT;
+// 	AddressU = Border;
+// 	AddressV = Border;
+// 	BorderColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+// };
 
 /// light
 float4 lightDir : DIRECTION
@@ -75,10 +75,10 @@ float2 SuperFilterTaps[SHADOW_FILTER_TAPS_CNT]
     {-0.321932f, 0.5954349f} 
 };
 
-float shadowMapTexelSize 
-< 
-	string UIWidget = "None"; 
-> = {0.00195313}; // (1.0f / 512)
+// float shadowMapTexelSize 
+// < 
+// 	string UIWidget = "None"; 
+// > = {0.00195313}; // (1.0f / 512)
 
 // float shadowDepthBias : ShadowMapBias
 // <

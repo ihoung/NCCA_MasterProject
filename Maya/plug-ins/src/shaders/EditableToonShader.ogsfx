@@ -97,18 +97,18 @@ attribute app2vertex
 {
     vec4 position : POSITION;
     vec2 texCoord : TEXCOORD0;
-};
+}
 
 // output to pixel shader
 attribute vertex2pixel
 {
     vec2 VSUV : TEXCOORD0;
-};
+}
 
 attribute pixelOut
 {
     vec4 colorOut : COLOR0;
-};
+}
 
 // float lightShadow(float4x4 LightViewPrj, uniform Texture2D ShadowMapTexture, float3 VertexWorldPosition)
 // {	
