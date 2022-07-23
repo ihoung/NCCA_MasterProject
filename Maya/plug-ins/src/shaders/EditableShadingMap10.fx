@@ -174,7 +174,7 @@ vertex2pixel VS_ShadingMap(app2vertex IN)
 /*********************************/
 /********PIXEL SHADER**********/
 /*********************************/
-float4 PS_2ShadingMap(vertex2pixel IN) : SV_TARGET
+float PS_2ShadingMap(vertex2pixel IN) : SV_TARGET
 {
     float3 N = (NormalMap.z * IN.worldNormal) + (NormalMap.y * IN.worldBinormal) + (NormalMap.x * IN.worldTangent);
     N = normalize(N);
@@ -184,7 +184,7 @@ float4 PS_2ShadingMap(vertex2pixel IN) : SV_TARGET
     float diffuseSmooth = pow(DiffuseSmoothness, 5);
     float smoothedDiffuse = smoothstep(ShadeThreshold-diffuseSmooth, ShadeThreshold+diffuseSmooth, diffuse);
     float result = lerp(0.0f, 1.0f, smoothedDiffuse/**shadow*/);
-    return float4(result, 0.0f, 0.0f, 1.0f);
+    return result;
 }
 
 

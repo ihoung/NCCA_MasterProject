@@ -1,11 +1,7 @@
 //////// tweakables
 uniform vec3 BaseColor;
 
-uniform texture2D ShadingMap
-<
-	string UIWidget = "None"; 
-    int mipmaplevels = 0;
->;
+uniform float Diffuse;
 
 uniform float ShadeIntensityRatio
 <

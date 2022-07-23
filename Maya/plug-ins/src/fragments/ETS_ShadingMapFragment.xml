@@ -13,7 +13,7 @@ Toon renderer. Uses pre-processed shade map to render the final shading color.]]
 <float name="DiffuseSmoothness" value="0.400000"  />
     </values>
     <outputs>
-        <target  name="output" />
+        <float  name="output" />
     </outputs>
     <parametershare>
     </parametershare>

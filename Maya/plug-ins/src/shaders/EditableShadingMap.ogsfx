@@ -95,7 +95,7 @@ attribute vertex2pixel
 
 attribute pixelOut
 {
-    vec4 diffuseOut : COLOR0;
+    float diffuseOut : COLOR0;
 }
 
 // float lightShadow(float4x4 LightViewPrj, uniform Texture2D ShadowMapTexture, float3 VertexWorldPosition)
@@ -162,7 +162,7 @@ GLSLShader PS_2ShadingMap
         float diffuseSmooth = pow(DiffuseSmoothness, 5);
         float smoothedDiffuse = smoothstep(ShadeThreshold-diffuseSmooth, ShadeThreshold+diffuseSmooth, diffuse);
         float result = lerp(0.0f, 1.0f, smoothedDiffuse/**shadow*/);
-        diffuseOut = vec4(result, 0.0f, 0.0f, 1.0f);
+        diffuseOut = result;
     }
 }
 

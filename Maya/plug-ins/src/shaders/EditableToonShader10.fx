@@ -1,7 +1,7 @@
 //////// tweakables
 float3 BaseColor;
 
-Texture2D ShadingMap;
+float Diffuse;
 
 float ShadeIntensityRatio
 <

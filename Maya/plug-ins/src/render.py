@@ -15,6 +15,7 @@ class EditableToonShader(om.MPxNode):
     aShadeIntensityRatio = None
     aDiffuseSmoothness = None
     aLightDirection = None
+    aNormalCamera = None
     # aShadowDepthBias = None
     aLinearSpaceLighting = None
 
@@ -77,6 +78,10 @@ class EditableToonShader(om.MPxNode):
         nAttr.readable = True
         nAttr.writable = False
         nAttr.default = (1.0, 1.0, 1.0)
+
+        EditableToonShader.aNormalCamera = nAttr.createPoint("normalCamera", "n")
+        nAttr.storable = False
+        nAttr.hidden = True
 
         # EditableToonShader.aShadowDepthBias = nAttr.create("shadowDepthBias", "sd", om.MFnNumericData.kFloat)
         # nAttr.keyable = True

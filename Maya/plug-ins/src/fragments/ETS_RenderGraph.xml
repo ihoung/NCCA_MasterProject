@@ -5,7 +5,7 @@
             <fragment_ref name="ETS_ShadingMap" ref="ETS_ShadingMapFragment" />
     </fragments>
     <connections>
-        <connect from="ETS_ShadingMap.output" to="ETS_Toon.ShadingMap" name="shadingMap" />
+        <connect from="ETS_ShadingMap.output" to="ETS_Toon.Diffuse" name="diffuse" />
     </connections>
     <properties>
         <float3  name="baseColor" ref="ETS_Toon.BaseColor" />
