@@ -1,29 +1,83 @@
-<fragment  uiName="ETS_ShadingMapFragment" name="ETS_ShadingMapFragment" type="plumbing" class="ScriptFragment" version="1.0" feature_level="20" >
+<fragment  uiName="ETS_ShadingMapFragment" name="ETS_ShadingMapFragment" type="plumbing" class="ScriptFragment" version="1.0" feature_level="40" >
     <description>
 <![CDATA[
 Toon renderer. Uses pre-processed shade map to render the final shading color.]]>
-</description>
+    </description>
     <properties>
-        <float3  name="NormalMap" />
+        <!-- <float3  name="NormalMap" /> -->
+        <float3 name="Nw" flags="varyingInputParam" />
+        <float3 name="Lw" />
         <float  name="ShadeThreshold" />
         <float  name="DiffuseSmoothness" />
     </properties>
     <values>
-<float name="ShadeThreshold" value="0.500000"  />
-<float name="DiffuseSmoothness" value="0.400000"  />
+        <float3 name="Lw" value="0.0,0.0,0.0" />
+        <float name="ShadeThreshold" value="0.500000" />
+        <float name="DiffuseSmoothness" value="0.400000" />
     </values>
     <outputs>
         <float  name="output" />
     </outputs>
     <parametershare>
     </parametershare>
-    <implementation render="OGS" language="ScriptInterpreter" version="0.1" >
-        <scriptCommands>
-            <SetEffect name="ShadingMap2Tones" path="EditableShadingMap" technique="TwoTones" />
-            <SetEffectParameter effect="ShadingMap2Tones" name="NormalMap" value="@NormalMap" />
-            <SetEffectParameter effect="ShadingMap2Tones" name="ShadeThreshold" value="@ShadeThreshold" />
-            <SetEffectParameter effect="ShadingMap2Tones" name="DiffuseSmoothness" value="@DiffuseSmoothness" />
-        </scriptCommands>
+    <implementation >
+    <implementation render="OGSRender" language="Cg" lang_version="2.100000" >
+        <function_name val="ETSShadingMapFragment" />
+        <source>
+            <![CDATA[
+float ETSShadingMapFragment(
+    float3 Nw,
+    float3 Lw,
+    float ShadeThreshold,
+    float DiffuseSmoothness
+)
+{
+    float diffuse = dot(Nw, Lw);
+    float diffuseSmooth = pow(DiffuseSmoothness, 5);
+    float smoothedDiffuse = smoothstep(ShadeThreshold-diffuseSmooth, ShadeThreshold+diffuseSmooth, diffuse);
+    return lerp(0.0f, 1.0f, smoothedDiffuse);
+}
+            ]]>
+        </source>
+    </implementation>
+    <implementation render="OGSRender" language="HLSL" lang_version="11.000000" >
+        <function_name val="ETSShadingMapFragment" />
+        <source>
+            <![CDATA[
+float ETSShadingMapFragment(
+    float3 Nw,
+    float3 Lw,
+    float ShadeThreshold,
+    float DiffuseSmoothness
+)
+{
+    float diffuse = dot(Nw, Lw);
+    float diffuseSmooth = pow(DiffuseSmoothness, 5);
+    float smoothedDiffuse = smoothstep(ShadeThreshold-diffuseSmooth, ShadeThreshold+diffuseSmooth, diffuse);
+    return lerp(0.0f, 1.0f, smoothedDiffuse);
+}
+            ]]>
+        </source>
+    </implementation>
+    <implementation render="OGSRender" language="GLSL" lang_version="3.000000" >
+        <function_name val="ETSShadingMapFragment" />
+        <source>
+            <![CDATA[
+float ETSShadingMapFragment(
+    vec3 Nw,
+    vec3 Lw,
+    float ShadeThreshold,
+    float DiffuseSmoothness
+)
+{
+    float diffuse = dot(Nw, Lw);
+    float diffuseSmooth = pow(DiffuseSmoothness, 5);
+    float smoothedDiffuse = smoothstep(ShadeThreshold-diffuseSmooth, ShadeThreshold+diffuseSmooth, diffuse);
+    return lerp(0.0f, 1.0f, smoothedDiffuse);
+}
+            ]]>
+        </source>
+    </implementation>
     </implementation>
 </fragment>
 

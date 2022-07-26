@@ -81,17 +81,17 @@ attribute app2vertex
     vec4 normal : NORMAL;
     vec4 binormal : BINORMAL0;
     vec4 tangent : TANGENT0;
-}
+};
 
 // output to pixel shader
 attribute vertex2pixel
 {
-    vec2 VSUV : TEXCOORD0;
-    vec3 worldNormal : TEXCOORD1;
-    vec3 worldBinormal : TEXCOORD2;
-    vec3 worldTangent : TEXCOORD3;
-    vec3 worldPosition : TEXCOORD4;
-}
+    vec2 VSUV;
+    vec3 worldNormal;
+    vec3 worldBinormal;
+    vec3 worldTangent;
+    vec3 worldPosition;
+};
 
 attribute pixelOut
 {

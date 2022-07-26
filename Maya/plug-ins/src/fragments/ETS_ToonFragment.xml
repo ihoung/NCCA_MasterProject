@@ -1,32 +1,78 @@
-<fragment  uiName="ETS_ToonFragment" name="ETS_ToonFragment" type="plumbing" class="ScriptFragment" version="1.0" feature_level="20" >
+<fragment  uiName="ETS_ToonFragment" name="ETS_ToonFragment" type="plumbing" class="ScriptFragment" version="1.0" feature_level="40" >
     <description>
 <![CDATA[
 Toon renderer. Uses pre-processed shade map to render the final shading color.]]>
-</description>
+    </description>
     <properties>
         <float3  name="BaseColor" />
-        <float  name="Diffuse" />
+        <float  name="DiffuseShading" />
+        <float3 name="diffuseI" />
         <float  name="ShadeIntensityRatio" />
         <bool  name="LinearSpaceLighting" />
     </properties>
     <values>
-<float name="ShadeIntensityRatio" value="0.200000"  />
-<bool name="LinearSpaceLighting" value="true"  />
+        <float3 name="BaseColor" value="0.5,0.5,0.5" />
+        <float  name="DiffuseShading" value="1.0" />
+        <float3 name="diffuseI" value="0.0,0.0,0.0" />
+        <float name="ShadeIntensityRatio" value="0.200000"  />
     </values>
     <outputs>
         <float4  name="output" />
     </outputs>
     <parametershare>
     </parametershare>
-    <implementation render="OGS" language="ScriptInterpreter" version="0.1" >
-        <scriptCommands>
-            <SetEffect name="EditableToonShader" path="EditableToonShader" technique="TwoTones" />
-            <SetEffectParameter effect="EditableToonShader" name="BaseColor" value="@BaseColor" />
-            <SetEffectParameter effect="EditableToonShader" name="ShadeIntensityRatio" value="@ShadeIntensityRatio" />
-            <SetEffectParameter effect="EditableToonShader" name="LinearSpaceLighting" value="@LinearSpaceLighting" />
-            <SetEffectParameter effect="EditableToonShader" name="Diffuse" value="@Diffuse" />
-            <SetEffectParameter effect="EditableToonShader" name="shadingMapSamp" value="PointClamp" />
-        </scriptCommands>
+    <implementation >
+    <implementation render="OGSRender" language="Cg" lang_version="2.100000" >
+        <function_name val="ETSToonFragment" />
+        <source>
+            <![CDATA[
+float4 ETSToonFragment(
+    float3 BaseColor,
+    float DiffuseShading,
+    float3 diffuseI,
+    float ShadeIntensityRatio)
+{
+    float4 col = float4(BaseColor, 1.0f);
+    col *= lerp(ShadeIntensityRatio, 1.0f, DiffuseShading) * diffuseI;
+    return col;
+}
+            ]]>
+        </source>
+    </implementation>
+    <implementation render="OGSRender" language="HLSL" lang_version="11.000000" >
+        <function_name val="ETSToonFragment" />
+        <source>
+            <![CDATA[
+float4 ETSToonFragment(
+    float3 BaseColor,
+    float DiffuseShading,
+    float3 diffuseI,
+    float ShadeIntensityRatio)
+{
+    float4 col = float4(BaseColor, 1.0f);
+    col *= lerp(ShadeIntensityRatio, 1.0f, DiffuseShading) * diffuseI;
+    return col;
+}
+            ]]>
+        </source>
+    </implementation>
+    <implementation render="OGSRender" language="GLSL" lang_version="3.000000" >
+        <function_name val="ETSToonFragment" />
+        <source>
+            <![CDATA[
+vec4 ETSToonFragment(
+    vec3 BaseColor,
+    float DiffuseShading,
+    vec3 diffuseI,
+    float ShadeIntensityRatio)
+{
+    vec4 col = vec4(BaseColor, 1.0f);
+    col *= lerp(ShadeIntensityRatio, 1.0f, DiffuseShading) * diffuseI;    
+    return col;
+}
+            ]]>
+        </source>
+    </implementation>
     </implementation>
 </fragment>
 

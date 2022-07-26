@@ -5,21 +5,25 @@
             <fragment_ref name="ETS_ShadingMap" ref="ETS_ShadingMapFragment" />
     </fragments>
     <connections>
-        <connect from="ETS_ShadingMap.output" to="ETS_Toon.Diffuse" name="diffuse" />
+        <connect from="ETS_ShadingMap.output" to="ETS_Toon.DiffuseShading" name="diffuseShading" />
     </connections>
     <properties>
         <float3  name="baseColor" ref="ETS_Toon.BaseColor" />
-        <float3  name="normalMap" ref="ETS_ShadingMap.NormalMap" />
+        <!-- <float3  name="normalMap" ref="ETS_ShadingMap.NormalMap" /> -->
+        <float3 name="Nw" ref="ETS_ShadingMap.Nw" flags="varyingInputParam" />
+        <float3 name="Lw" ref="ETS_ShadingMap.Lw" />
         <float  name="shadeThreshold" ref="ETS_ShadingMap.ShadeThreshold" />
         <float  name="diffuseSmoothness" ref="ETS_ShadingMap.DiffuseSmoothness" />
+        <float3 name="diffuseI" ref="ETS_Toon.diffuseI" />
         <float  name="shadeIntensityRatio" ref="ETS_Toon.ShadeIntensityRatio" />
-        <bool name="linearSpaceLighting" ref="ETS_Toon.LinearSpaceLighting" />
     </properties>
     <values>
-<float name="shadeThreshold" value="0.500000"  />
-<float name="diffuseSmoothness" value="0.400000"  />
-<float name="shadeIntensityRatio" value="0.200000"  />
-<bool name="linearSpaceLighting" value="true"  />
+        <float3 name="baseColor" value="0.500000,0.500000,0.500000" />
+        <float3 name="Lw" value="0.000000,0.000000,0.000000"  />
+        <float3 name="diffuseI" value="0.000000,0.000000,0.000000" />
+        <float name="shadeThreshold" value="0.500000"  />
+        <float name="diffuseSmoothness" value="0.400000"  />
+        <float name="shadeIntensityRatio" value="0.200000"  />
     </values>
     <outputs>
         <float4  name="output" ref="ETS_Toon.output" />

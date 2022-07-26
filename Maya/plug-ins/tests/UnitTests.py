@@ -8,7 +8,7 @@ import maya.api.OpenMayaRender as OMR
 import os
 import sys
 
-sys.path.append(os.path.dirname(__file__) + r'/../src')
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 import utils
 
 
@@ -22,7 +22,7 @@ class TestMayaScene(unittest.TestCase):
     def test_shader(self):
         shaderMgr = OMR.MRenderer.getShaderManager()
         dc = OMR.MRenderUtilities.acquireSwatchDrawContext()
-        shaderInstance = shaderMgr.getEffectsFileShader(os.path.join(utils.getShaderDirPath(),"DistanceDilate.ogsfx"), "")
+        shaderInstance = shaderMgr.getEffectsFileShader(os.path.join(utils.getShaderDirPath(),"EditableShadingMap.ogsfx"), "")
         # shaderInstance.bind(dc)
         # errorMsg = "EditableShadingMap10" + ":\n" + OMR.MShaderManager.getLastError() + OMR.MShaderManager.getLastErrorSource(TRUE,TRUE,2)
         # OM.MGlobal.displayError(errorMsg)
