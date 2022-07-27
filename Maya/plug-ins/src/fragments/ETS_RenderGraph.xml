@@ -26,6 +26,6 @@
         <float name="shadeIntensityRatio" value="0.200000"  />
     </values>
     <outputs>
-        <float4  name="output" ref="ETS_Toon.output" />
+        <float3  name="output" ref="ETS_Toon.output" />
     </outputs>
 </fragment_graph>

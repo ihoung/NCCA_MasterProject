@@ -14,8 +14,9 @@ class EditableToonShader(om.MPxNode):
     aShadeThreshold = None
     aShadeIntensityRatio = None
     aDiffuseSmoothness = None
-    aLightDirection = None
-    aLightIntensity = None
+    # aLightDirection = None
+    # aLightIntensity = None
+    # aLightData = None
     aNormalCamera = None
     # aShadowDepthBias = None
     # aLinearSpaceLighting = None
@@ -30,6 +31,7 @@ class EditableToonShader(om.MPxNode):
     @staticmethod
     def initialize():
         nAttr = om.MFnNumericAttribute()
+        lAttr = om.MFnLightDataAttribute()
 
         # Create input attributes
         EditableToonShader.aBaseColor = nAttr.createColor("baseColor", "bc")
@@ -73,19 +75,25 @@ class EditableToonShader(om.MPxNode):
         nAttr.setMax(1.0)
         nAttr.default = 0.4
 
-        EditableToonShader.aLightDirection = nAttr.createPoint( "lightDirection", "ld" )
-        nAttr.storable = False
-        nAttr.hidden = True
-        nAttr.readable = True
-        nAttr.writable = False
-        nAttr.default = (1.0, 1.0, 1.0)
+        # EditableToonShader.aLightDirection = nAttr.createPoint( "lightDirection", "ld" )
+        # nAttr.storable = False
+        # nAttr.hidden = True
+        # nAttr.readable = True
+        # nAttr.writable = False
 
-        EditableToonShader.aLightIntensity = nAttr.createColor( "lightIntensity", "li" )
-        nAttr.storable = False
-        nAttr.hidden = True
-        nAttr.readable = True
-        nAttr.writable = False
-        nAttr.default = (1.0, 1.0, 1.0)
+        # EditableToonShader.aLightIntensity = nAttr.createColor( "lightIntensity", "li" )
+        # nAttr.storable = False
+        # nAttr.hidden = True
+        # nAttr.readable = True
+        # nAttr.writable = False
+
+        # EditableToonShader.aLightData = lAttr.create("lightDataArray", "ltd",
+		# EditableToonShader.aLightDirection,
+		# EditableToonShader.aLightIntensity)
+        # lAttr.array = True
+        # lAttr.storable = False
+        # lAttr.hidden = True
+        # lAttr.default = (1.0, 1.0, 1.0, 1.0, 1.0, 1.0)
 
         EditableToonShader.aNormalCamera = nAttr.createPoint("normalCamera", "n")
         nAttr.storable = False
@@ -121,8 +129,9 @@ class EditableToonShader(om.MPxNode):
         om.MPxNode.addAttribute(EditableToonShader.aShadeThreshold)
         om.MPxNode.addAttribute(EditableToonShader.aShadeIntensityRatio)
         om.MPxNode.addAttribute(EditableToonShader.aDiffuseSmoothness)
-        om.MPxNode.addAttribute(EditableToonShader.aLightDirection)
-        om.MPxNode.addAttribute(EditableToonShader.aLightIntensity)
+        # om.MPxNode.addAttribute(EditableToonShader.aLightDirection)
+        # om.MPxNode.addAttribute(EditableToonShader.aLightIntensity)
+        # om.MPxNode.addAttribute(EditableToonShader.aLightData)
         om.MPxNode.addAttribute(EditableToonShader.aNormalCamera)
         # om.MPxNode.addAttribute(EditableToonShader.aShadowDepthBias)
         # om.MPxNode.addAttribute(EditableToonShader.aLinearSpaceLighting)
@@ -133,8 +142,9 @@ class EditableToonShader(om.MPxNode):
         om.MPxNode.attributeAffects(EditableToonShader.aShadeThreshold, EditableToonShader.aOutColor)
         om.MPxNode.attributeAffects(EditableToonShader.aShadeIntensityRatio, EditableToonShader.aOutColor)
         om.MPxNode.attributeAffects(EditableToonShader.aDiffuseSmoothness, EditableToonShader.aOutColor)
-        om.MPxNode.attributeAffects(EditableToonShader.aLightDirection, EditableToonShader.aOutColor)
-        om.MPxNode.attributeAffects(EditableToonShader.aLightIntensity, EditableToonShader.aOutColor)
+        # om.MPxNode.attributeAffects(EditableToonShader.aLightDirection, EditableToonShader.aOutColor)
+        # om.MPxNode.attributeAffects(EditableToonShader.aLightIntensity, EditableToonShader.aOutColor)
+        # om.MPxNode.attributeAffects(EditableToonShader.aLightData, EditableToonShader.aOutColor)
         om.MPxNode.attributeAffects(EditableToonShader.aNormalCamera, EditableToonShader.aOutColor)
         # om.MPxNode.attributeAffects(EditableToonShader.aShadowDepthBias, EditableToonShader.aOutColor)
         # om.MPxNode.attributeAffects(EditableToonShader.aLinearSpaceLighting, EditableToonShader.aOutColor)
@@ -147,11 +157,6 @@ class EditableToonShader(om.MPxNode):
             return None
 
         baseColor = block.inputValue(EditableToonShader.aBaseColor).asFloatVector()
-        normalMap = block.inputValue(EditableToonShader.aNormalMap).asFloatVector()
-        shadeThreshold = block.inputValue(EditableToonShader.aShadeThreshold).asFloat()
-        shadeIntensityRatio = block.inputValue(EditableToonShader.aShadeIntensityRatio).asFloat()
-        diffuseSmoothness = block.inputValue(EditableToonShader.aDiffuseSmoothness).asFloat()
-        lightDirection = block.inputValue(EditableToonShader.aLightDirection).asFloatVector()
 
         resultColor = baseColor
 

@@ -16,7 +16,7 @@ Toon renderer. Uses pre-processed shade map to render the final shading color.]]
         <float name="DiffuseSmoothness" value="0.400000" />
     </values>
     <outputs>
-        <float  name="output" />
+        <float3  name="output" />
     </outputs>
     <parametershare>
     </parametershare>
@@ -25,7 +25,7 @@ Toon renderer. Uses pre-processed shade map to render the final shading color.]]
         <function_name val="ETSShadingMapFragment" />
         <source>
             <![CDATA[
-float ETSShadingMapFragment(
+float3 ETSShadingMapFragment(
     float3 Nw,
     float3 Lw,
     float ShadeThreshold,
@@ -35,7 +35,8 @@ float ETSShadingMapFragment(
     float diffuse = dot(Nw, Lw);
     float diffuseSmooth = pow(DiffuseSmoothness, 5);
     float smoothedDiffuse = smoothstep(ShadeThreshold-diffuseSmooth, ShadeThreshold+diffuseSmooth, diffuse);
-    return lerp(0.0f, 1.0f, smoothedDiffuse);
+    float result = lerp(0.0f, 1.0f, smoothedDiffuse);
+    return float3(result, 1.0f, 1.0f);
 }
             ]]>
         </source>
@@ -44,7 +45,7 @@ float ETSShadingMapFragment(
         <function_name val="ETSShadingMapFragment" />
         <source>
             <![CDATA[
-float ETSShadingMapFragment(
+float3 ETSShadingMapFragment(
     float3 Nw,
     float3 Lw,
     float ShadeThreshold,
@@ -54,7 +55,8 @@ float ETSShadingMapFragment(
     float diffuse = dot(Nw, Lw);
     float diffuseSmooth = pow(DiffuseSmoothness, 5);
     float smoothedDiffuse = smoothstep(ShadeThreshold-diffuseSmooth, ShadeThreshold+diffuseSmooth, diffuse);
-    return lerp(0.0f, 1.0f, smoothedDiffuse);
+    float result = lerp(0.0f, 1.0f, smoothedDiffuse);
+    return float3(result, 1.0f, 1.0f);
 }
             ]]>
         </source>
@@ -63,7 +65,7 @@ float ETSShadingMapFragment(
         <function_name val="ETSShadingMapFragment" />
         <source>
             <![CDATA[
-float ETSShadingMapFragment(
+vec3 ETSShadingMapFragment(
     vec3 Nw,
     vec3 Lw,
     float ShadeThreshold,
@@ -73,7 +75,8 @@ float ETSShadingMapFragment(
     float diffuse = dot(Nw, Lw);
     float diffuseSmooth = pow(DiffuseSmoothness, 5);
     float smoothedDiffuse = smoothstep(ShadeThreshold-diffuseSmooth, ShadeThreshold+diffuseSmooth, diffuse);
-    return lerp(0.0f, 1.0f, smoothedDiffuse);
+    float result = lerp(0.0f, 1.0f, smoothedDiffuse);
+    return vec3(result, 1.0f, 1.0f);
 }
             ]]>
         </source>

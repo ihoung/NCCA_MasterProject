@@ -21,13 +21,23 @@ class TestMayaScene(unittest.TestCase):
 
     def test_shader(self):
         shaderMgr = OMR.MRenderer.getShaderManager()
-        dc = OMR.MRenderUtilities.acquireSwatchDrawContext()
-        shaderInstance = shaderMgr.getEffectsFileShader(os.path.join(utils.getShaderDirPath(),"EditableShadingMap.ogsfx"), "")
+        # dc = OMR.MRenderUtilities.acquireSwatchDrawContext()
+        # shaderInstance = shaderMgr.getEffectsFileShader(os.path.join(utils.getShaderDirPath(),"EditableShadingMap.ogsfx"), "")
         # shaderInstance.bind(dc)
         # errorMsg = "EditableShadingMap10" + ":\n" + OMR.MShaderManager.getLastError() + OMR.MShaderManager.getLastErrorSource(TRUE,TRUE,2)
         # OM.MGlobal.displayError(errorMsg)
         # shaderInstance.unbind(dc)
-    
+
+    def test_fragment(self):
+        fragmentMgr = OMR.MRenderer.getFragmentManager()
+        fragmentMgr.addFragmentPath(utils.getFragmentDirPath())
+        if not fragmentMgr.hasFragment("ETS_RenderGraph"):
+                fragmentMgr.addFragmentGraphFromFile("ETS_RenderGraph.xml") 
+        if not fragmentMgr.hasFragment("ETS_ShadingMapFragment"):
+            fragmentMgr.addShadeFragmentFromFile("ETS_ShadingMapFragment.xml", False)
+        if not fragmentMgr.hasFragment("ETS_ToonFragment"):
+            fragmentMgr.addShadeFragmentFromFile("ETS_ToonFragment.xml", False)
+
 
 if __name__ == '__main__':
     maya.standalone.initialize(name='python')

@@ -5,19 +5,19 @@ Toon renderer. Uses pre-processed shade map to render the final shading color.]]
     </description>
     <properties>
         <float3  name="BaseColor" />
-        <float  name="DiffuseShading" />
+        <float3  name="DiffuseShading" />
         <float3 name="diffuseI" />
         <float  name="ShadeIntensityRatio" />
         <bool  name="LinearSpaceLighting" />
     </properties>
     <values>
         <float3 name="BaseColor" value="0.5,0.5,0.5" />
-        <float  name="DiffuseShading" value="1.0" />
+        <float3  name="DiffuseShading" value="1.0,1.0,1.0" />
         <float3 name="diffuseI" value="0.0,0.0,0.0" />
         <float name="ShadeIntensityRatio" value="0.200000"  />
     </values>
     <outputs>
-        <float4  name="output" />
+        <float3  name="output" />
     </outputs>
     <parametershare>
     </parametershare>
@@ -26,14 +26,14 @@ Toon renderer. Uses pre-processed shade map to render the final shading color.]]
         <function_name val="ETSToonFragment" />
         <source>
             <![CDATA[
-float4 ETSToonFragment(
+float3 ETSToonFragment(
     float3 BaseColor,
-    float DiffuseShading,
+    float3 DiffuseShading,
     float3 diffuseI,
     float ShadeIntensityRatio)
 {
-    float4 col = float4(BaseColor, 1.0f);
-    col *= lerp(ShadeIntensityRatio, 1.0f, DiffuseShading) * diffuseI;
+    float4 col = BaseColor;
+    col *= lerp(ShadeIntensityRatio, 1.0f, DiffuseShading.r) * diffuseI;
     return col;
 }
             ]]>
@@ -43,14 +43,14 @@ float4 ETSToonFragment(
         <function_name val="ETSToonFragment" />
         <source>
             <![CDATA[
-float4 ETSToonFragment(
+float3 ETSToonFragment(
     float3 BaseColor,
-    float DiffuseShading,
+    float3 DiffuseShading,
     float3 diffuseI,
     float ShadeIntensityRatio)
 {
-    float4 col = float4(BaseColor, 1.0f);
-    col *= lerp(ShadeIntensityRatio, 1.0f, DiffuseShading) * diffuseI;
+    float4 col = BaseColor;
+    col *= lerp(ShadeIntensityRatio, 1.0f, DiffuseShading.r) * diffuseI;
     return col;
 }
             ]]>
@@ -60,14 +60,14 @@ float4 ETSToonFragment(
         <function_name val="ETSToonFragment" />
         <source>
             <![CDATA[
-vec4 ETSToonFragment(
+vec3 ETSToonFragment(
     vec3 BaseColor,
-    float DiffuseShading,
+    vec3 DiffuseShading,
     vec3 diffuseI,
     float ShadeIntensityRatio)
 {
-    vec4 col = vec4(BaseColor, 1.0f);
-    col *= lerp(ShadeIntensityRatio, 1.0f, DiffuseShading) * diffuseI;    
+    vec4 col = BaseColor;
+    col *= lerp(ShadeIntensityRatio, 1.0f, DiffuseShading.r) * diffuseI;    
     return col;
 }
             ]]>
