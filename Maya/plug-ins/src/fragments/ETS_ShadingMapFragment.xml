@@ -1,4 +1,4 @@
-<fragment  uiName="ETS_ShadingMapFragment" name="ETS_ShadingMapFragment" type="plumbing" class="ScriptFragment" version="1.0" feature_level="40" >
+<fragment  uiName="ETS_ShadingMapFragment" name="ETS_ShadingMapFragment" type="plumbing" class="ShadeFragment" version="1.0" feature_level="30" >
     <description>
 <![CDATA[
 Toon renderer. Uses pre-processed shade map to render the final shading color.]]>
@@ -21,7 +21,7 @@ Toon renderer. Uses pre-processed shade map to render the final shading color.]]
     <parametershare>
     </parametershare>
     <implementation >
-    <implementation render="OGSRender" language="Cg" lang_version="2.100000" >
+    <implementation render="OGSRenderer" language="Cg" lang_version="2.100000" >
         <function_name val="ETSShadingMapFragment" />
         <source>
             <![CDATA[
@@ -41,7 +41,7 @@ float3 ETSShadingMapFragment(
             ]]>
         </source>
     </implementation>
-    <implementation render="OGSRender" language="HLSL" lang_version="11.000000" >
+    <implementation render="OGSRenderer" language="HLSL" lang_version="11.000000" >
         <function_name val="ETSShadingMapFragment" />
         <source>
             <![CDATA[
@@ -61,7 +61,7 @@ float3 ETSShadingMapFragment(
             ]]>
         </source>
     </implementation>
-    <implementation render="OGSRender" language="GLSL" lang_version="3.000000" >
+    <implementation render="OGSRenderer" language="GLSL" lang_version="3.000000" >
         <function_name val="ETSShadingMapFragment" />
         <source>
             <![CDATA[

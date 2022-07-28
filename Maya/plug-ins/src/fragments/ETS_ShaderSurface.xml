@@ -1,4 +1,4 @@
-<fragment_graph  name="ETS_RenderGraph" ref="ETS_RenderGraph" class="FragmentGraph" version="1.0" feature_level="0" >
+<fragment_graph  name="ETS_ShaderSurface" ref="ETS_ShaderSurface" class="FragmentGraph" version="1.0" >
     <description></description>
     <fragments>
             <fragment_ref name="ETS_Toon" ref="ETS_ToonFragment" />
@@ -9,8 +9,7 @@
     </connections>
     <properties>
         <float3  name="baseColor" ref="ETS_Toon.BaseColor" />
-        <!-- <float3  name="normalMap" ref="ETS_ShadingMap.NormalMap" /> -->
-        <float3 name="Nw" ref="ETS_ShadingMap.Nw" flags="varyingInputParam" />
+        <float3 name="Nw" ref="ETS_ShadingMap.Nw" semantic="Nw" flags="varyingInputParam" />
         <float3 name="Lw" ref="ETS_ShadingMap.Lw" />
         <float  name="shadeThreshold" ref="ETS_ShadingMap.ShadeThreshold" />
         <float  name="diffuseSmoothness" ref="ETS_ShadingMap.DiffuseSmoothness" />
@@ -26,6 +25,6 @@
         <float name="shadeIntensityRatio" value="0.200000"  />
     </values>
     <outputs>
-        <float3  name="output" ref="ETS_Toon.output" />
+        <float3  name="outColor" ref="ETS_Toon.outColor" />
     </outputs>
 </fragment_graph>

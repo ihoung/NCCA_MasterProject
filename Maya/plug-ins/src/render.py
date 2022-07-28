@@ -182,17 +182,19 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
         if shaderMgr and fragmentMgr:
             # shaderMgr.addShaderPath(utils.getShaderDirPath())
             fragmentMgr.addFragmentPath(utils.getFragmentDirPath())
-            if not fragmentMgr.hasFragment("ETS_RenderGraph"):
-                fragmentMgr.addFragmentGraphFromFile("ETS_RenderGraph.xml")
             if not fragmentMgr.hasFragment("ETS_ShadingMapFragment"):
                 fragmentMgr.addShadeFragmentFromFile("ETS_ShadingMapFragment.xml", False)
             if not fragmentMgr.hasFragment("ETS_ToonFragment"):
                 fragmentMgr.addShadeFragmentFromFile("ETS_ToonFragment.xml", False)
+            if not fragmentMgr.hasFragment("ETS_ShaderSurface"):
+                fragmentMgr.addFragmentGraphFromFile("ETS_ShaderSurface.xml")
     
     def __del__(self):
         fragmentMgr = omr.MRenderer.getFragmentManager()
         if fragmentMgr:
-            fragmentMgr.removeFragment("ETS_RenderGraph")
+            fragmentMgr.removeFragment("ETS_ShaderSurface")
+            fragmentMgr.removeFragment("ETS_ShadingMapFragment")
+            fragmentMgr.removeFragment("ETS_ToonFragment")
 
     def primaryColorParameter(self):
         return "baseColor"
@@ -204,4 +206,4 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
         return omr.MRenderer.kOpenGL | omr.MRenderer.kOpenGLCoreProfile | omr.MRenderer.kDirectX11
 
     def fragmentName(self):
-        return "ETS_RenderGraph"
+        return "ETS_ShaderSurface"

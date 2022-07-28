@@ -31,12 +31,15 @@ class TestMayaScene(unittest.TestCase):
     def test_fragment(self):
         fragmentMgr = OMR.MRenderer.getFragmentManager()
         fragmentMgr.addFragmentPath(utils.getFragmentDirPath())
-        if not fragmentMgr.hasFragment("ETS_RenderGraph"):
-                fragmentMgr.addFragmentGraphFromFile("ETS_RenderGraph.xml") 
-        if not fragmentMgr.hasFragment("ETS_ShadingMapFragment"):
-            fragmentMgr.addShadeFragmentFromFile("ETS_ShadingMapFragment.xml", False)
-        if not fragmentMgr.hasFragment("ETS_ToonFragment"):
-            fragmentMgr.addShadeFragmentFromFile("ETS_ToonFragment.xml", False)
+        if fragmentMgr.hasFragment("ETS_ShadingMapFragment"):
+            fragmentMgr.removeFragment("ETS_ShadingMapFragment")
+        if fragmentMgr.hasFragment("ETS_ToonFragment"):
+            fragmentMgr.removeFragment("ETS_ShadingMapFragment")
+        if fragmentMgr.hasFragment("ETS_ShaderSurface"):
+            fragmentMgr.removeFragment("ETS_ShadingMapFragment")
+        fragmentMgr.addShadeFragmentFromFile("ETS_ShadingMapFragment.xml", False)
+        fragmentMgr.addShadeFragmentFromFile("ETS_ToonFragment.xml", False)
+        fragmentMgr.addFragmentGraphFromFile("ETS_ShaderSurface.xml") 
 
 
 if __name__ == '__main__':
