@@ -1,3 +1,4 @@
+from pyexpat import native_encoding
 import maya.api.OpenMaya as om
 import maya.api.OpenMayaRender as omr
 
@@ -16,6 +17,8 @@ class EditableToonShader(om.MPxNode):
     aDiffuseSmoothness = None
     # aLightDirection = None
     # aLightIntensity = None
+    # aLightShadowFraction = None
+    # aPreShadowIntensity = None
     # aLightData = None
     aNormalCamera = None
     # aShadowDepthBias = None
@@ -87,6 +90,14 @@ class EditableToonShader(om.MPxNode):
         # nAttr.readable = True
         # nAttr.writable = False
 
+        # EditableToonShader.aLightShadowFraction = nAttr.create( "lightShadowFraction", "lsf", om.MFnNumericData.kFloat)
+        # nAttr.storable = False
+        # nAttr.hidden = True
+
+        # EditableToonShader.aPreShadowIntensity = nAttr.create( "preShadowIntensity", "psi", om.MFnNumericData.kFloat)
+        # nAttr.storable = False
+        # nAttr.hidden = True
+
         # EditableToonShader.aLightData = lAttr.create("lightDataArray", "ltd",
 		# EditableToonShader.aLightDirection,
 		# EditableToonShader.aLightIntensity)
@@ -97,9 +108,6 @@ class EditableToonShader(om.MPxNode):
 
         EditableToonShader.aNormalCamera = nAttr.createPoint("normalCamera", "n")
         nAttr.storable = False
-        nAttr.hidden = True
-        nAttr.readable = True
-        nAttr.writable = False
 
         # EditableToonShader.aShadowDepthBias = nAttr.create("shadowDepthBias", "sd", om.MFnNumericData.kFloat)
         # nAttr.keyable = True
@@ -131,6 +139,8 @@ class EditableToonShader(om.MPxNode):
         om.MPxNode.addAttribute(EditableToonShader.aDiffuseSmoothness)
         # om.MPxNode.addAttribute(EditableToonShader.aLightDirection)
         # om.MPxNode.addAttribute(EditableToonShader.aLightIntensity)
+        # om.MPxNode.addAttribute(EditableToonShader.aLightShadowFraction)
+        # om.MPxNode.addAttribute(EditableToonShader.aPreShadowIntensity)
         # om.MPxNode.addAttribute(EditableToonShader.aLightData)
         om.MPxNode.addAttribute(EditableToonShader.aNormalCamera)
         # om.MPxNode.addAttribute(EditableToonShader.aShadowDepthBias)
@@ -144,6 +154,8 @@ class EditableToonShader(om.MPxNode):
         om.MPxNode.attributeAffects(EditableToonShader.aDiffuseSmoothness, EditableToonShader.aOutColor)
         # om.MPxNode.attributeAffects(EditableToonShader.aLightDirection, EditableToonShader.aOutColor)
         # om.MPxNode.attributeAffects(EditableToonShader.aLightIntensity, EditableToonShader.aOutColor)
+        # om.MPxNode.attributeAffects(EditableToonShader.aLightShadowFraction, EditableToonShader.aOutColor)
+        # om.MPxNode.attributeAffects(EditableToonShader.aPreShadowIntensity, EditableToonShader.aOutColor)
         # om.MPxNode.attributeAffects(EditableToonShader.aLightData, EditableToonShader.aOutColor)
         om.MPxNode.attributeAffects(EditableToonShader.aNormalCamera, EditableToonShader.aOutColor)
         # om.MPxNode.attributeAffects(EditableToonShader.aShadowDepthBias, EditableToonShader.aOutColor)
