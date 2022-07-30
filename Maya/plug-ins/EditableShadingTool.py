@@ -80,7 +80,18 @@ def registerNodes(plugin_fn):
     try:
         OMR.MDrawRegistry.registerDrawOverrideCreator(ShadingLocatorNode.drawDbClassification, ShadingLocatorNode.drawRegistrantId, ShadingLocatorNodeDrawOverride.creator)
     except:
-        OpenMaya.MGlobal.displayError("Failed to register draw override ShadingLocatorNodeDrawOverride")
+        OpenMaya.MGlobal.displayError("Failed to register draw override ShadingLocatorNodeDrawOverride for locator")
+    # Locator pivot node
+    try:
+        plugin_fn.registerNode('shadingPivotNode', ShadingPivotNode.id,                               \
+                                ShadingPivotNode.creator, ShadingPivotNode.initialize,                \
+                                OpenMaya.MPxNode.kLocatorNode, ShadingPivotNode.drawDbClassification)
+    except:
+        OpenMaya.MGlobal.displayError("Failed to register node ShadingPivotNode")
+    try:
+        OMR.MDrawRegistry.registerDrawOverrideCreator(ShadingPivotNode.drawDbClassification, ShadingPivotNode.drawRegistrantId, ShadingLocatorNodeDrawOverride.creator)
+    except:
+        OpenMaya.MGlobal.displayError("Failed to register draw override ShadingLocatorNodeDrawOverride for pivot")
     # Shader node
     try:
         userClassify = "shader/surface:" + EditableToonShader.sDbClassification
@@ -103,7 +114,16 @@ def deregisterNodes(plugin_fn):
     try:
         OMR.MDrawRegistry.deregisterDrawOverrideCreator(ShadingLocatorNode.drawDbClassification, ShadingLocatorNode.drawRegistrantId)
     except:
-        OpenMaya.MGlobal.displayError("Failed to deregister draw override ShadingLocatorNodeDrawOverride")
+        OpenMaya.MGlobal.displayError("Failed to deregister draw override ShadingLocatorNodeDrawOverride for locator")
+    # Locator pivot node
+    try: 
+        plugin_fn.deregisterNode(ShadingPivotNode.id)
+    except:
+        OpenMaya.MGlobal.displayError("Failed to deregister node ShadingPivotNode")
+    try:
+        OMR.MDrawRegistry.deregisterDrawOverrideCreator(ShadingPivotNode.drawDbClassification, ShadingPivotNode.drawRegistrantId)
+    except:
+        OpenMaya.MGlobal.displayError("Failed to deregister draw override ShadingLocatorNodeDrawOverride for pivot")
     # Shader node
     try:
         plugin_fn.deregisterNode(EditableToonShader.id)

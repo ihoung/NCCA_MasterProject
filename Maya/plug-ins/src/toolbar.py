@@ -4,6 +4,7 @@ import maya.cmds as cmds
 import maya.mel as mel
 
 import utils
+import data
 
 class EditableShadingShelf(object):
     SHELF_NAME = 'Editable Shading'
@@ -15,6 +16,7 @@ class EditableShadingShelf(object):
             cls.shelf_instance = cmds.shelfLayout(cls.SHELF_NAME, p="ShelfLayout")
             # Add buttons
             cmds.shelfButton(ann='Add a shading edit', i='locator.png', c=EditableShadingCmd.addEditLocator)
+            cmds.shelfButton(ann='Assign toon shader', i='', c=EditableShadingCmd.assignToonShader)
 
     @classmethod
     def createShelf(cls, args):
@@ -40,6 +42,7 @@ class EditableShadingMenu(object):
             cls.menu_instance = cmds.menu(label=cls.MENU_NAME, parent='MayaWindow', visible=cmds.menuSet(q=1, label=1)=='Rendering')
             # Add menu items
             cmds.menuItem(label='Add Edit Locator', command=EditableShadingCmd.addEditLocator)
+            cmds.menuItem(label='Assign Toon Shader', command=EditableShadingCmd.assignToonShader)
             cmds.menuItem(label='Open Shelf', command=EditableShadingShelf.createShelf)
             # Add menu to rendering menu set
             cmds.menuSet(rendering_menuset, addMenu=cls.menu_instance)
@@ -59,5 +62,25 @@ class EditableShadingCmd(object):
 
     @classmethod
     def addEditLocator(cls, *args):
+        slist = cmds.ls(sl=1)
+        if len(slist) == 0:
+            print('No object selected!')
+            return
+        elif len(slist) != 1:
+            print('More than one object selected')
+            return
         print('Add edit locator')
-        cmds.createNode('shadingLocatorNode')
+        meshObj = slist[0]
+        data.EditManager.createEdit(meshObj)
+        
+    @classmethod
+    def assignToonShader(cls, *args):
+        slist = cmds.ls(sl=1)
+        if len(slist) == 0:
+            print('No object selected!')
+            return
+        print('Assign toon shader')
+        shaderNode = cmds.shadingNode('editableToonShader', asShader=1)
+        sg = cmds.sets(renderable=1, noSurfaceShader=1, em=1, name='editableToonShader1SG')
+        cmds.connectAttr(shaderNode+'.outColor', sg+'.surfaceShader', f=1)
+        cmds.sets(slist, e=1, fe=sg)

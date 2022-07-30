@@ -16,7 +16,7 @@ nodeLineList = [
 ]
 
 ######################################################################################
-# ShadingLocatorNode start
+# ShadingLocatorNode starts
 
 class ShadingLocatorNode(OMUI.MPxLocatorNode):
     id = OM.MTypeId(0x00070001)
@@ -102,12 +102,59 @@ class ShadingLocatorNodeDrawOverride(OMR.MPxDrawOverride):
         if not isinstance(drawdata, ShadingLocatorNodeDrawData):
             return
 
-        print('linelist: {}'.format(drawdata.fLineList))
+        # print('linelist: {}'.format(drawdata.fLineList))
         drawManager.beginDrawable()
         drawManager.setColor(drawdata.fColor)
         drawManager.setDepthPriority(5)
         drawManager.mesh(OMR.MUIDrawManager.kLines, drawdata.fLineList)
         drawManager.endDrawable()
 
-# ShadingLocatorNode end
+# ShadingLocatorNode ends
+######################################################################################
+
+######################################################################################
+# ShadingPivotNode starts
+
+class ShadingPivotNode(OM.MPxNode):
+    id = OM.MTypeId(0x00070002)
+    drawDbClassification = "drawdb/geometry/shadingpivot"
+    drawRegistrantId = "ShadingPivotNodePlugin"
+
+    @staticmethod
+    def creator():
+        return ShadingPivotNode()
+
+    @staticmethod
+    def initialize():
+        pass
+    
+    def __init__(self):
+        OMUI.MPxLocatorNode.__init__(self)
+
+    def compute(self, plug, data):
+        OMUI.MPxLocatorNode.compute(self, plug, data)
+
+    def draw(self, view, path, style, status):
+        global nodeLineList
+        view.beginGL()
+        ## drawing in VP1 views will be done using V1 Python APIs:
+        import maya.OpenMayaRender as v1omr      
+        glRenderer = v1omr.MHardwareRenderer.theRenderer()
+        glFT = glRenderer.glFunctionTable()
+        
+        if status == OMUI.M3dView.kActive:
+            view.setDrawColor( 13, OMUI.M3dView.kActiveColors )
+        else:
+            view.setDrawColor( 13, OMUI.M3dView.kDormantColors )
+        glFT.glBegin(v1omr.MGL_LINES)
+        glFT.glVertex3f(nodeLineList[0][0], nodeLineList[0][1], nodeLineList[0][2])
+        glFT.glVertex3f(nodeLineList[1][0], nodeLineList[1][1], nodeLineList[1][2])
+        glFT.glVertex3f(nodeLineList[2][0], nodeLineList[2][1], nodeLineList[2][2])
+        glFT.glVertex3f(nodeLineList[3][0], nodeLineList[3][1], nodeLineList[3][2])
+        glFT.glVertex3f(nodeLineList[4][0], nodeLineList[4][1], nodeLineList[4][2])
+        glFT.glVertex3f(nodeLineList[5][0], nodeLineList[5][1], nodeLineList[5][2])
+        glFT.glEnd()
+    
+        view.endGL()
+# ShadingPivotNode ends
 ######################################################################################
