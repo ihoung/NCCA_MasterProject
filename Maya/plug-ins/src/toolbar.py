@@ -73,7 +73,13 @@ class EditableShadingCmd(object):
             return
         print('Add edit locator')
         meshObj = slist[0]
-        data.EditManager.createEdit(meshObj)
+        edit = data.EditManager.createEdit(meshObj)
+        # Add to group
+        groupName = cmds.ls(meshObj, sn=1)[0] + '_shadingEdits'
+        if not cmds.objExists(groupName):
+            cmds.group(n=groupName, em=1)
+        cmds.parent([edit.locTrans, edit.pivotTrans], groupName)
+        cmds.select(edit.locTrans)
 
     @classmethod
     def editProjectPivot(cls, *args):
