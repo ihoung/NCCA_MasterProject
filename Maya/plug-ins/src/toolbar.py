@@ -15,8 +15,9 @@ class EditableShadingShelf(object):
         if not (cls.shelf_instance and cmds.shelfLayout(cls.shelf_instance, q=1, ex=1)):
             cls.shelf_instance = cmds.shelfLayout(cls.SHELF_NAME, p="ShelfLayout")
             # Add buttons
-            cmds.shelfButton(ann='Add a shading edit', i='locator.png', c=EditableShadingCmd.addEditLocator)
             cmds.shelfButton(ann='Assign toon shader', i='', c=EditableShadingCmd.assignToonShader)
+            cmds.shelfButton(ann='Add a shading edit', i='locator.png', c=EditableShadingCmd.addEditLocator)
+            cmds.shelfButton(ann='Edit shading projection pivot', i='', c=EditableShadingCmd.editProjectPivot)
 
     @classmethod
     def createShelf(cls, args):
@@ -41,8 +42,9 @@ class EditableShadingMenu(object):
             rendering_menuset = mel.eval('findMenuSetFromLabel("Rendering")')
             cls.menu_instance = cmds.menu(label=cls.MENU_NAME, parent='MayaWindow', visible=cmds.menuSet(q=1, label=1)=='Rendering')
             # Add menu items
-            cmds.menuItem(label='Add Edit Locator', command=EditableShadingCmd.addEditLocator)
             cmds.menuItem(label='Assign Toon Shader', command=EditableShadingCmd.assignToonShader)
+            cmds.menuItem(label='Add Edit Locator', command=EditableShadingCmd.addEditLocator)
+            cmds.menuItem(label='Edit shading projection pivot', command=EditableShadingCmd.editProjectPivot)
             cmds.menuItem(label='Open Shelf', command=EditableShadingShelf.createShelf)
             # Add menu to rendering menu set
             cmds.menuSet(rendering_menuset, addMenu=cls.menu_instance)
@@ -72,6 +74,22 @@ class EditableShadingCmd(object):
         print('Add edit locator')
         meshObj = slist[0]
         data.EditManager.createEdit(meshObj)
+
+    @classmethod
+    def editProjectPivot(cls, *args):
+        slist = cmds.ls(sl=1)
+        if len(slist) > 1:
+            print('More than one edit selected')
+            return
+        elif len(slist) == 0:
+            print('No edit selected!')
+            return
+        elif len(cmds.listRelatives(slist[0], typ='shadingLocatorNode')) == 0:
+            print('No edit locator selected!')
+            return
+        pivotTrans = data.EditManager.getEditPivot(slist[0])
+        cmds.select(pivotTrans)
+        cmds.setToolTo('Move')
         
     @classmethod
     def assignToonShader(cls, *args):
