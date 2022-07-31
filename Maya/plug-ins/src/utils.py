@@ -22,11 +22,17 @@ def getFragmentDirPath():
 def getShaderDirPath():
     return os.path.join(getRootPath(), 'shaders')
 
-def viewPos(screenX, screenY):
+def getMeshNearbyPosInView(mesh, screenX, screenY):
     vx, vy, vw, vh = omui.M3dView().active3dView().viewport()
     viewPosX = int(vx + vw * screenX)
     viewPosY = int(vy + vh * screenY)
     pos = om.MPoint()
     dir = om.MVector()
     omui.M3dView().active3dView().viewToWorld(viewPosX, viewPosY, pos, dir)
-    return pos
+    selectionList = om.MSelectionList()
+    selectionList.add(mesh)
+    nodeDagPath = selectionList.getDagPath(0)
+    mfnMesh = om.MFnMesh(nodeDagPath)
+    closestP, fId = mfnMesh.getClosestPoint(pos, om.MSpace.kWorld)
+    res = closestP + (pos - closestP) * 0.1
+    return res
