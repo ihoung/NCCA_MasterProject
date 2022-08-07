@@ -23,13 +23,114 @@ class ShadingLocatorNode(OMUI.MPxLocatorNode):
     drawDbClassification = "drawdb/geometry/shadinglocator"
     drawRegistrantId = "ShadingLocatorNodePlugin"
 
+    # Attributes
+    aAnisotropy = None
+    aSharpness = None
+    aBend = None
+    aBulge = None
+    aRotation = None
+    aNormalSmooth = None
+    aIntensityGain = None
+    aSoftness = None
+
     @staticmethod
     def creator():
         return ShadingLocatorNode()
 
     @staticmethod
     def initialize():
-        pass
+        nAttr = OM.MFnNumericAttribute()
+        uAttr = OM.MFnUnitAttribute()
+
+        ShadingLocatorNode.aAnisotropy = nAttr.create('anisotropy', 'a', OM.MFnNumericData.kFloat)
+        nAttr.keyable = True
+        nAttr.storable = True
+        nAttr.readable = True
+        nAttr.writable = True
+        nAttr.setMin(0.0)
+        nAttr.setMax(1.0)
+        nAttr.default = 0.0
+
+        ShadingLocatorNode.aSharpness = nAttr.create('sharpness', 's', OM.MFnNumericData.kFloat)
+        nAttr.keyable = True
+        nAttr.storable = True
+        nAttr.readable = True
+        nAttr.writable = True
+        nAttr.setMin(0.0)
+        nAttr.setMax(1.0)
+        nAttr.default = 0.0
+
+        ShadingLocatorNode.aBend = nAttr.create('bend', 'wy', OM.MFnNumericData.kFloat)
+        nAttr.keyable = True
+        nAttr.storable = True
+        nAttr.readable = True
+        nAttr.writable = True
+        nAttr.setMin(-0.5)
+        nAttr.setMax(0.5)
+        nAttr.default = 0.0
+
+        ShadingLocatorNode.aBulge = nAttr.create('bulge', 'wx', OM.MFnNumericData.kFloat)
+        nAttr.keyable = True
+        nAttr.storable = True
+        nAttr.readable = True
+        nAttr.writable = True
+        nAttr.setMin(-0.1)
+        nAttr.setMax(0.1)
+        nAttr.default = 0.0
+
+        ShadingLocatorNode.aRotation = uAttr.create('rotation', 'rot', OM.MFnUnitAttribute.kAngle)
+        uAttr.keyable = True
+        uAttr.storable = True
+        uAttr.readable = True
+        uAttr.writable = True
+        uAttr.setMin(OM.MAngle(-180.0, OM.MAngle.kDegrees))
+        uAttr.setMax(OM.MAngle(180.0, OM.MAngle.kDegrees))
+        uAttr.default = OM.MAngle(0.0, OM.MAngle.kDegrees)
+
+        ShadingLocatorNode.aNormalSmooth = nAttr.create('normalSmooth', 'ns', OM.MFnNumericData.kFloat)
+        nAttr.keyable = True
+        nAttr.storable = True
+        nAttr.readable = True
+        nAttr.writable = True
+        nAttr.setMin(0.0)
+        nAttr.setMax(1.0)
+        nAttr.default = 0.0
+
+        ShadingLocatorNode.aIntensityGain = nAttr.create('intensityGain', 'G', OM.MFnNumericData.kFloat)
+        nAttr.keyable = True
+        nAttr.storable = True
+        nAttr.readable = True
+        nAttr.writable = True
+        nAttr.setSoftMin(-10.0)
+        nAttr.setSoftMax(10.0)
+        nAttr.default = 0.0
+
+        ShadingLocatorNode.aSoftness = nAttr.create('softness', 'd', OM.MFnNumericData.kFloat)
+        nAttr.keyable = True
+        nAttr.storable = True
+        nAttr.readable = True
+        nAttr.writable = True
+        nAttr.setMin(0.0)
+        nAttr.setSoftMax(10.0)
+        nAttr.default = 0.1
+
+        ShadingLocatorNode.addAttribute(ShadingLocatorNode.aAnisotropy)
+        ShadingLocatorNode.addAttribute(ShadingLocatorNode.aSharpness)
+        ShadingLocatorNode.addAttribute(ShadingLocatorNode.aBend)
+        ShadingLocatorNode.addAttribute(ShadingLocatorNode.aBulge)
+        ShadingLocatorNode.addAttribute(ShadingLocatorNode.aRotation)
+        ShadingLocatorNode.addAttribute(ShadingLocatorNode.aNormalSmooth)
+        ShadingLocatorNode.addAttribute(ShadingLocatorNode.aIntensityGain)
+        ShadingLocatorNode.addAttribute(ShadingLocatorNode.aSoftness)
+
+        # ShadingLocatorNode.attributeAffects(ShadingLocatorNode.aAnisotropy, ShadingLocatorNode.aOutputData)
+        # ShadingLocatorNode.attributeAffects(ShadingLocatorNode.aSharpness, ShadingLocatorNode.aOutputData)
+        # ShadingLocatorNode.attributeAffects(ShadingLocatorNode.aBend, ShadingLocatorNode.aOutputData)
+        # ShadingLocatorNode.attributeAffects(ShadingLocatorNode.aBulge, ShadingLocatorNode.aOutputData)
+        # ShadingLocatorNode.attributeAffects(ShadingLocatorNode.aRotation, ShadingLocatorNode.aOutputData)
+        # ShadingLocatorNode.attributeAffects(ShadingLocatorNode.aNormalSmooth, ShadingLocatorNode.aOutputData)
+        # ShadingLocatorNode.attributeAffects(ShadingLocatorNode.aIntensityGain, ShadingLocatorNode.aOutputData)
+        # ShadingLocatorNode.attributeAffects(ShadingLocatorNode.aSoftness, ShadingLocatorNode.aOutputData)
     
     def __init__(self):
         OMUI.MPxLocatorNode.__init__(self)
