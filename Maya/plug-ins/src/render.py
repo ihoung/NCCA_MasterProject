@@ -23,6 +23,7 @@ class EditableToonShader(om.MPxNode):
     aNormalCamera = None
     # aShadowDepthBias = None
     # aLinearSpaceLighting = None
+    aSharpness = None
 
     # Output attributes
     aOutColor = None
@@ -125,6 +126,14 @@ class EditableToonShader(om.MPxNode):
         # nAttr.writable = True
         # nAttr.default = True
 
+        EditableToonShader.aSharpness = nAttr.create("sharpness", "s", om.MFnNumericData.kFloat)
+        nAttr.array = True
+        nAttr.keyable = False
+        nAttr.storable = True
+        nAttr.readable = False
+        nAttr.writable = True
+        nAttr.usesArrayDataBuilder = True
+
         # Create output attributes
         EditableToonShader.aOutColor = nAttr.createColor("outColor", "oc")
         nAttr.keyable = False
@@ -145,6 +154,7 @@ class EditableToonShader(om.MPxNode):
         om.MPxNode.addAttribute(EditableToonShader.aNormalCamera)
         # om.MPxNode.addAttribute(EditableToonShader.aShadowDepthBias)
         # om.MPxNode.addAttribute(EditableToonShader.aLinearSpaceLighting)
+        om.MPxNode.addAttribute(EditableToonShader.aSharpness)
         om.MPxNode.addAttribute(EditableToonShader.aOutColor)
 
         om.MPxNode.attributeAffects(EditableToonShader.aBaseColor, EditableToonShader.aOutColor)
@@ -160,6 +170,7 @@ class EditableToonShader(om.MPxNode):
         om.MPxNode.attributeAffects(EditableToonShader.aNormalCamera, EditableToonShader.aOutColor)
         # om.MPxNode.attributeAffects(EditableToonShader.aShadowDepthBias, EditableToonShader.aOutColor)
         # om.MPxNode.attributeAffects(EditableToonShader.aLinearSpaceLighting, EditableToonShader.aOutColor)
+        om.MPxNode.attributeAffects(EditableToonShader.aSharpness, EditableToonShader.aOutColor)
 
     def __init__(self):
         om.MPxNode.__init__(self)

@@ -15,6 +15,7 @@
         <float  name="diffuseSmoothness" ref="ETS_ShadingMap.DiffuseSmoothness" />
         <float3 name="diffuseI" ref="ETS_Toon.diffuseI" />
         <float  name="shadeIntensityRatio" ref="ETS_Toon.ShadeIntensityRatio" />
+        <float name="sharpness[50]" ref ="ETS_ShadingMap.Sharpness[50]" />
     </properties>
     <values>
         <float3 name="baseColor" value="0.500000,0.500000,0.500000" />

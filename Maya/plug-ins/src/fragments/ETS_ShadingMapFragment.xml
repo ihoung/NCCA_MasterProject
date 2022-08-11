@@ -9,6 +9,7 @@ Toon renderer. Uses pre-processed shade map to render the final shading color.]]
         <float3 name="Lw" />
         <float  name="ShadeThreshold" />
         <float  name="DiffuseSmoothness" />
+        <float name="Sharpness[50]" />
     </properties>
     <values>
         <float3 name="Lw" value="0.0,0.0,0.0" />

@@ -66,14 +66,25 @@ class EditableShadingCmd(object):
     def addEditLocator(cls, *args):
         slist = cmds.ls(sl=1)
         if len(slist) == 0:
-            print('No object selected!')
+            OpenMaya.MGlobal.displayError('No object selected!')
             return
         elif len(slist) != 1:
-            print('More than one object selected')
+            OpenMaya.MGlobal.displayError('More than one object selected')
             return
-        print('Add edit locator')
         meshObj = slist[0]
+        # Check the assigned toon shader
+        meshName = cmds.listRelatives(meshObj)[0]
+        shadingGroup = cmds.listConnections(meshName)[0]
+        if shadingGroup is not None:
+        # Get the material attached to the shader group
+            material = [x for x in cmds.ls(cmds.listConnections(shadingGroup), materials=1)][0]
+        print('Add edit locator')
         edit = data.EditManager.createEdit(meshObj)
+        # Connect attributes
+        if cmds.nodeType(material) == 'editableToonShader':
+            cmds.connectAttr(edit.locator+'.sharpness', material+'.sharpness')
+        else:
+            OpenMaya.MGlobal.displayWarning('No specific toon material assgined!')
         # Add to group
         groupName = cmds.ls(meshObj, sn=1)[0] + '_shadingEdits'
         if not cmds.objExists(groupName):
@@ -85,13 +96,13 @@ class EditableShadingCmd(object):
     def editProjectPivot(cls, *args):
         slist = cmds.ls(sl=1)
         if len(slist) > 1:
-            print('More than one edit selected')
+            OpenMaya.MGlobal.displayError('More than one edit selected')
             return
         elif len(slist) == 0:
-            print('No edit selected!')
+            OpenMaya.MGlobal.displayError('No edit selected!')
             return
         elif len(cmds.listRelatives(slist[0], typ='shadingLocatorNode')) == 0:
-            print('No edit locator selected!')
+            OpenMaya.MGlobal.displayError('No edit locator selected!')
             return
         pivotTrans = data.EditManager.getEditPivot(slist[0])
         cmds.select(pivotTrans)
@@ -101,7 +112,7 @@ class EditableShadingCmd(object):
     def assignToonShader(cls, *args):
         slist = cmds.ls(sl=1)
         if len(slist) == 0:
-            print('No object selected!')
+            OpenMaya.MGlobal.displayError('No object selected!')
             return
         print('Assign toon shader')
         shaderNode = cmds.shadingNode('editableToonShader', asShader=1)
