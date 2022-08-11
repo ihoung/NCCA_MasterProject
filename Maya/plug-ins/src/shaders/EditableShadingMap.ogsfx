@@ -107,15 +107,15 @@ attribute pixelOut
 // 	if ( Pndc.x > -1.0f && Pndc.x < 1.0f && Pndc.y  > -1.0f   
 // 		&& Pndc.y <  1.0f && Pndc.z >  0.0f && Pndc.z <  1.0f ) 
 // 	{ 
-// 		float2 uv = 0.5f * Pndc.xy + 0.5f; 
-// 		uv = float2(uv.x,(1.0-uv.y));	// maya flip Y
+// 		vec2 uv = 0.5f * Pndc.xy + 0.5f; 
+// 		uv = vec2(uv.x,(1.0-uv.y));	// maya flip Y
 // 		float z = Pndc.z - shadowDepthBias / Pndc.w; 
 
 // 		// we'll sample a bunch of times to smooth our shadow a little bit around the edges:
 // 		shadow = 0.0f;
 // 		for(int i=0; i<SHADOW_FILTER_TAPS_CNT; ++i) 
 // 		{ 
-// 			float2 suv = uv + (SuperFilterTaps[i] * shadowMapTexelSize);
+// 			vec2 suv = uv + (SuperFilterTaps[i] * shadowMapTexelSize);
 // 			float val = z - ShadowMapTexture.SampleLevel(SamplerShadowDepth, suv, 0 ).x;
 // 			shadow += (val >= 0.0f) ? 0.0f : (1.0f / SHADOW_FILTER_TAPS_CNT);
 // 		}
@@ -139,11 +139,11 @@ GLSLShader VS_ShadingMap
     void main()
     {    
         gl_Position = mul(position, gWvpXf);
-        worldPosition = mul(position, gWorldXf);
-        worldNormal = mul(normal, gWorldITXf);
-        worldBinormal = mul(binormal, gWorldITXf);
-        worldTangent = mul(tangent, gWorldITXf);
-        VSUV = float2(texCoord.x, 1.0-texCoord.y);
+        worldPosition = mul(position, gWorldXf).xyz;
+        worldNormal = mul(normal, gWorldITXf).xyz;
+        worldBinormal = mul(binormal, gWorldITXf).xyz;
+        worldTangent = mul(tangent, gWorldITXf).xyz;
+        VSUV = vec2(texCoord.x, 1.0-texCoord.y);
     }
 }
 

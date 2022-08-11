@@ -1,10 +1,11 @@
-from distutils import command
 import maya.api.OpenMaya as OpenMaya
 import maya.cmds as cmds
 import maya.mel as mel
 
 import utils
 import data
+from render import EditableToonShader
+from locator import ShadingLocatorNode
 
 class EditableShadingShelf(object):
     SHELF_NAME = 'Editable Shading'
@@ -66,27 +67,38 @@ class EditableShadingCmd(object):
     def addEditLocator(cls, *args):
         slist = cmds.ls(sl=1)
         if len(slist) == 0:
-            OpenMaya.MGlobal.displayError('No object selected!')
+            OpenMaya.MGlobal.displayError('No mesh object selected!')
             return
         elif len(slist) != 1:
             OpenMaya.MGlobal.displayError('More than one object selected')
             return
-        meshObj = slist[0]
+        slObj = slist[0]
         # Check the assigned toon shader
-        meshName = cmds.listRelatives(meshObj)[0]
+        slChildList = cmds.listRelatives(slObj)
+        if slChildList is None or len(slChildList) == 0 or cmds.nodeType(slChildList[0]) != 'mesh':
+            OpenMaya.MGlobal.displayError('No mesh object selected!')
+            return
+        meshName = slChildList[0]
         shadingGroup = cmds.listConnections(meshName)[0]
         if shadingGroup is not None:
         # Get the material attached to the shader group
             material = [x for x in cmds.ls(cmds.listConnections(shadingGroup), materials=1)][0]
         print('Add edit locator')
-        edit = data.EditManager.createEdit(meshObj)
+        edit = data.EditManager.createEdit(slObj)
         # Connect attributes
         if cmds.nodeType(material) == 'editableToonShader':
-            cmds.connectAttr(edit.locator+'.sharpness', material+'.sharpness')
+            # cmds.connectAttr(edit.locator+'.sharpness', material+'.sharpness')
+            cmds.select(edit.locator)
+            mslList = OpenMaya.MGlobal.getActiveSelectionList()
+            editNode = mslList.getDependNode(0)
+            cmds.select(material)
+            mslList = OpenMaya.MGlobal.getActiveSelectionList()
+            materialNode = mslList.getDependNode(0)
+            utils.connect2ArrayAttr(editNode, materialNode, ShadingLocatorNode.aSharpness, EditableToonShader.aSharpness)
         else:
             OpenMaya.MGlobal.displayWarning('No specific toon material assgined!')
         # Add to group
-        groupName = cmds.ls(meshObj, sn=1)[0] + '_shadingEdits'
+        groupName = cmds.ls(slObj, sn=1)[0] + '_shadingEdits'
         if not cmds.objExists(groupName):
             cmds.group(n=groupName, em=1)
         cmds.parent([edit.locTrans, edit.pivotTrans], groupName)

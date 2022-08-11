@@ -36,3 +36,12 @@ def getMeshNearbyPosInView(mesh, screenX, screenY):
     closestP, fId = mfnMesh.getClosestPoint(pos, om.MSpace.kWorld)
     res = closestP + (pos - closestP) * 0.1
     return res
+
+def connect2ArrayAttr(srcNode, desNode, srcAttr, desArrayAttr):
+    srcPlug = om.MPlug(srcNode, srcAttr)
+    desArrayPlug = om.MPlug(desNode, desArrayAttr)
+    desPlugElemNum = desArrayPlug.numConnectedElements()
+    targetPlug = desArrayPlug.elementByLogicalIndex(desPlugElemNum+1)
+    MDGMod = om.MDGModifier()   
+    MDGMod.connect(srcPlug, targetPlug)
+    MDGMod.doIt()
