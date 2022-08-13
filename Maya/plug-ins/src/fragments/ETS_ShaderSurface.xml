@@ -10,12 +10,13 @@
     <properties>
         <float3  name="baseColor" ref="ETS_Toon.BaseColor" />
         <float3 name="Nw" ref="ETS_ShadingMap.Nw" semantic="Nw" flags="varyingInputParam" />
+        <float2 name="uvCoord" ref="ETS_ShadingMap.uvCoord" semantic="mayaUvCoordSemantic" flags="varyingInputParam" />
         <float3 name="Lw" ref="ETS_ShadingMap.Lw" />
         <float  name="shadeThreshold" ref="ETS_ShadingMap.ShadeThreshold" />
         <float  name="diffuseSmoothness" ref="ETS_ShadingMap.DiffuseSmoothness" />
         <float3 name="diffuseI" ref="ETS_Toon.diffuseI" />
         <float  name="shadeIntensityRatio" ref="ETS_Toon.ShadeIntensityRatio" />
-        <float name="sharpness[50]" ref ="ETS_ShadingMap.Sharpness[50]" />
+        <float name="sharpness" ref ="ETS_ShadingMap.Sharpness" />
     </properties>
     <values>
         <float3 name="baseColor" value="0.500000,0.500000,0.500000" />
