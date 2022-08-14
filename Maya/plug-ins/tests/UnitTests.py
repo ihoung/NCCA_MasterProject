@@ -10,6 +10,7 @@ import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 import utils
+import fragments
 
 
 class TestMayaScene(unittest.TestCase):
@@ -40,6 +41,10 @@ class TestMayaScene(unittest.TestCase):
         fragmentMgr.addShadeFragmentFromFile("ETS_ShadingMapFragment.xml", False)
         fragmentMgr.addShadeFragmentFromFile("ETS_ToonFragment.xml", False)
         fragmentMgr.addFragmentGraphFromFile("ETS_ShaderSurface.xml") 
+
+    def test_fragmentGenerator(self):
+        frag = fragments.getShaderSurfaceFragment(2)
+        print(frag)
 
 
 if __name__ == '__main__':

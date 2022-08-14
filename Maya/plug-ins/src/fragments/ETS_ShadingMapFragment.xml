@@ -9,7 +9,8 @@ Toon renderer. Uses pre-processed shade map to render the final shading color.]]
         <float3 name="Lw" />
         <float  name="ShadeThreshold" />
         <float  name="DiffuseSmoothness" />
-        <float name="Sharpness" />
+        <float  name="sharpness0" />
+        <float  name="sharpness1" />
     </properties>
     <values>
         <float3 name="Lw" value="0.0,0.0,0.0" />
@@ -32,7 +33,6 @@ float3 ETSShadingMapFragment(
     float3 Lw,
     float ShadeThreshold,
     float DiffuseSmoothness,
-    float Sharpness
 )
 {
     float diffuse = dot(Nw, Lw);
@@ -54,16 +54,13 @@ float3 ETSShadingMapFragment(
     float3 Lw,
     float ShadeThreshold,
     float DiffuseSmoothness,
-    float Sharpness
 )
 {
     float diffuse = dot(Nw, Lw);
     float diffuseSmooth = pow(DiffuseSmoothness, 5);
     float smoothedDiffuse = smoothstep(ShadeThreshold-diffuseSmooth, ShadeThreshold+diffuseSmooth, diffuse);
     float result = lerp(0.0f, 1.0f, smoothedDiffuse);
-    int index = step(1.0f, uvCoord.x + uvCoord.y);
-    float res = Sharpness[index];
-    return float3(res, 1.0f, 1.0f);
+    return float3(result, 1.0f, 1.0f);
 }
             ]]>
         </source>
@@ -78,7 +75,6 @@ vec3 ETSShadingMapFragment(
     vec3 Lw,
     float ShadeThreshold,
     float DiffuseSmoothness,
-    float Sharpness
 )
 {
     float diffuse = dot(Nw, Lw);
