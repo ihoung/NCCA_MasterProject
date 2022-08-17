@@ -1,0 +1,98 @@
+<fragment  uiName="ETS_ShaderDiffuse" name="ETS_ShaderDiffuse" type="plumbing" class="ShadeFragment" version="1.0" feature_level="30" >
+    <description>
+<![CDATA[
+Calculate shading shape for each edit.]]>
+    </description>
+    <properties>
+        <float2 name="uvCoord" flags="varyingInputParam" />
+        <float  name="anisotropy" />
+        <float  name="sharpness" />
+        <float  name="bend" />
+        <float  name="bulge" />
+        <float  name="rotation" />
+        <float  name="normalSmooth" />
+        <float  name="intensityGain" />
+        <float  name="softness" />
+    </properties>
+    <values>
+        <float  name="anisotropy" value="0.0" />
+        <float  name="sharpness" value="0.0" />
+        <float  name="bend" value="0.0" />
+        <float  name="bulge" value="0.0" />
+        <float  name="rotation" value="0.0" />
+        <float  name="normalSmooth" value="0.0" />
+        <float  name="intensityGain" value="0.0" />
+        <float  name="softness" value="0.1" />
+    </values>
+    <outputs>
+        <float  name="output" />
+    </outputs>
+    <parametershare>
+    </parametershare>
+    <implementation >
+    <implementation render="OGSRenderer" language="Cg" lang_version="2.100000" >
+        <function_name val="ETSShaderDiffuse" />
+        <source>
+            <![CDATA[
+float3 ETSShaderDiffuse(
+    float2 uv,
+    float anisotropy,
+    float sharpness,
+    float bend,
+    float bulge,
+    float rotation,
+    float normalSmooth,
+    float intensityGain,
+    float softness
+)
+{
+    return uv.x;
+}
+            ]]>
+        </source>
+    </implementation>
+    <implementation render="OGSRenderer" language="HLSL" lang_version="11.000000" >
+        <function_name val="ETSShaderDiffuse" />
+        <source>
+            <![CDATA[
+float3 ETSShaderDiffuse(
+    float2 uv,
+    float anisotropy,
+    float sharpness,
+    float bend,
+    float bulge,
+    float rotation,
+    float normalSmooth,
+    float intensityGain,
+    float softness
+)
+{
+    return uv.x;
+}
+            ]]>
+        </source>
+    </implementation>
+    <implementation render="OGSRenderer" language="GLSL" lang_version="3.000000" >
+        <function_name val="ETSShaderDiffuse" />
+        <source>
+            <![CDATA[
+vec3 ETSShaderDiffuse(
+    vec2 uv,
+    float anisotropy,
+    float sharpness,
+    float bend,
+    float bulge,
+    float rotation,
+    float normalSmooth,
+    float intensityGain,
+    float softness
+)
+{
+    return uv.x;
+}
+            ]]>
+        </source>
+    </implementation>
+    </implementation>
+</fragment>
+

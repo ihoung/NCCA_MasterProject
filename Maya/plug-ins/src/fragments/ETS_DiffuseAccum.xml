@@ -1,0 +1,15 @@
+<fragment uiName="ETS_DiffuseAccum" name="ETS_DiffuseAccum" type="accum" class="ShadeFragment" version="1.0">
+    <description><![CDATA[Accumulates edits' diffuse]]></description>
+    <properties>
+        <float name="diffuse" />
+        <string name="selector" />
+    </properties>
+    <values>
+        <string name="selector" value="ETS_EditSelector" />
+    </values>
+    <outputs>
+        <alias name="diffuse" />
+    </outputs>
+    <implementation>
+    </implementation>
+</fragment>

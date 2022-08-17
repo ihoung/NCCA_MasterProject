@@ -1,0 +1,21 @@
+<fragment  uiName="ETS_EditSelector" name="ETS_EditSelector" type="selector" class="ShadeFragment" version="1.0" feature_level="0" >
+<description>
+<![CDATA[Selects one edit]]>
+</description>
+    <properties>
+        <int  name="selectionIndex" />
+        <struct  name="edit0" struct_name="ETS_EditData" />
+        <struct  name="edit1" struct_name="ETS_EditData" />
+        <struct  name="edit2" struct_name="ETS_EditData" />
+        <struct  name="edit3" struct_name="ETS_EditData" />
+        <struct  name="edit4" struct_name="ETS_EditData" />
+    </properties>
+    <values>
+        <int name="selectionIndex" value="0"  />
+    </values>
+    <outputs>
+        <struct  name="ETS_EditSelector" struct_name="ETS_EditData" />
+    </outputs>
+    <implementation  >
+    </implementation>
+</fragment>
