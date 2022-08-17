@@ -24,7 +24,15 @@ class EditableToonShader(om.MPxNode):
     aNormalCamera = None
     # aShadowDepthBias = None
     # aLinearSpaceLighting = None
+    aAnisotropy = None
     aSharpness = None
+    aBend = None
+    aBulge = None
+    aRotation = None
+    aNormalSmooth = None
+    aIntensityGain = None
+    aSoftness = None
+    aEdits = None
 
     # Output attributes
     aOutColor = None
@@ -37,6 +45,8 @@ class EditableToonShader(om.MPxNode):
     def initialize():
         nAttr = om.MFnNumericAttribute()
         lAttr = om.MFnLightDataAttribute()
+        cmpAttr = om.MFnCompoundAttribute()
+        uAttr = om.MFnUnitAttribute()
 
         # Create input attributes
         EditableToonShader.aBaseColor = nAttr.createColor("baseColor", "bc")
@@ -125,13 +135,35 @@ class EditableToonShader(om.MPxNode):
         # nAttr.writable = True
         # nAttr.default = True
 
-        EditableToonShader.aSharpness = nAttr.create("sharpness", "s", om.MFnNumericData.kFloat)
-        nAttr.array = True
-        nAttr.keyable = False
-        nAttr.storable = True
+        EditableToonShader.aAnisotropy = nAttr.create('anisotropy', 'a', om.MFnNumericData.kFloat)
         nAttr.readable = False
-        nAttr.writable = True
-        nAttr.usesArrayDataBuilder = True
+        EditableToonShader.aSharpness = nAttr.create('sharpness', 's', om.MFnNumericData.kFloat)
+        nAttr.readable = False
+        EditableToonShader.aBend = nAttr.create('bend', 'wy', om.MFnNumericData.kFloat)
+        nAttr.readable = False
+        EditableToonShader.aBulge = nAttr.create('bulge', 'wx', om.MFnNumericData.kFloat)
+        nAttr.readable = False
+        EditableToonShader.aRotation = uAttr.create('rotation', 'rot', om.MFnUnitAttribute.kAngle)
+        nAttr.readable = False
+        EditableToonShader.aNormalSmooth = nAttr.create('normalSmooth', 'ns', om.MFnNumericData.kFloat)
+        nAttr.readable = False
+        EditableToonShader.aIntensityGain = nAttr.create('intensityGain', 'G', om.MFnNumericData.kFloat)
+        nAttr.readable = False
+        EditableToonShader.aSoftness = nAttr.create('softness', 'd', om.MFnNumericData.kFloat)
+        nAttr.readable = False
+
+        EditableToonShader.aEdits = cmpAttr.create("edits", "es")
+        cmpAttr.array = True
+        cmpAttr.addChild(EditableToonShader.aAnisotropy)
+        cmpAttr.addChild(EditableToonShader.aSharpness)
+        cmpAttr.addChild(EditableToonShader.aBend)
+        cmpAttr.addChild(EditableToonShader.aBulge)
+        cmpAttr.addChild(EditableToonShader.aRotation)
+        cmpAttr.addChild(EditableToonShader.aNormalSmooth)
+        cmpAttr.addChild(EditableToonShader.aIntensityGain)
+        cmpAttr.addChild(EditableToonShader.aSoftness)
+        cmpAttr.readable = False
+        cmpAttr.usesArrayDataBuilder = True
 
         # Create output attributes
         EditableToonShader.aOutColor = nAttr.createColor("outColor", "oc")
@@ -153,7 +185,7 @@ class EditableToonShader(om.MPxNode):
         om.MPxNode.addAttribute(EditableToonShader.aNormalCamera)
         # om.MPxNode.addAttribute(EditableToonShader.aShadowDepthBias)
         # om.MPxNode.addAttribute(EditableToonShader.aLinearSpaceLighting)
-        om.MPxNode.addAttribute(EditableToonShader.aSharpness)
+        om.MPxNode.addAttribute(EditableToonShader.aEdits)
         om.MPxNode.addAttribute(EditableToonShader.aOutColor)
 
         om.MPxNode.attributeAffects(EditableToonShader.aBaseColor, EditableToonShader.aOutColor)
@@ -169,7 +201,7 @@ class EditableToonShader(om.MPxNode):
         om.MPxNode.attributeAffects(EditableToonShader.aNormalCamera, EditableToonShader.aOutColor)
         # om.MPxNode.attributeAffects(EditableToonShader.aShadowDepthBias, EditableToonShader.aOutColor)
         # om.MPxNode.attributeAffects(EditableToonShader.aLinearSpaceLighting, EditableToonShader.aOutColor)
-        om.MPxNode.attributeAffects(EditableToonShader.aSharpness, EditableToonShader.aOutColor)
+        om.MPxNode.attributeAffects(EditableToonShader.aEdits, EditableToonShader.aOutColor)
 
     def __init__(self):
         om.MPxNode.__init__(self)
@@ -200,7 +232,6 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
 
         self.fObject = obj
         self.fSharpness = []
-        self.fResolvedSharpnessName = ''
 
         # Register fragments with the manager
         shaderMgr = omr.MRenderer.getShaderManager()
@@ -208,20 +239,16 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
         if shaderMgr and fragmentMgr:
             # shaderMgr.addShaderPath(utils.getShaderDirPath())
             fragmentMgr.addFragmentPath(utils.getFragmentDirPath())
-            if not fragmentMgr.hasFragment("ETS_ShadingMapFragment"):
-                fragmentMgr.addShadeFragmentFromFile("ETS_ShadingMapFragment.xml", False)
+            # if not fragmentMgr.hasFragment("ETS_ShadingMapFragment"):
+            #     fragmentMgr.addShadeFragmentFromFile("ETS_ShadingMapFragment.xml", False)
+            # if not fragmentMgr.hasFragment("ETS_ToonFragment"):
+            #     fragmentMgr.addShadeFragmentFromFile("ETS_ToonFragment.xml", False)
+            # if not fragmentMgr.hasFragment("ETS_ShaderSurface"):
+            #     fragmentMgr.addFragmentGraphFromFile("ETS_ShaderSurface.xml")
             if not fragmentMgr.hasFragment("ETS_ToonFragment"):
-                fragmentMgr.addShadeFragmentFromFile("ETS_ToonFragment.xml", False)
-            if not fragmentMgr.hasFragment("ETS_ShaderSurface"):
-                fragmentMgr.addFragmentGraphFromFile("ETS_ShaderSurface.xml")
+                fragmentBody = fragments.getShaderSurfaceFragment(0)
+                fragmentMgr.addShadeFragmentFromBuffer(fragmentBody, False)
     
-    def __del__(self):
-        fragmentMgr = omr.MRenderer.getFragmentManager()
-        if fragmentMgr:
-            fragmentMgr.removeFragment("ETS_ShaderSurface")
-            fragmentMgr.removeFragment("ETS_ShadingMapFragment")
-            fragmentMgr.removeFragment("ETS_ToonFragment")
-
     def primaryColorParameter(self):
         return "baseColor"
 
@@ -232,31 +259,44 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
         return omr.MRenderer.kOpenGL | omr.MRenderer.kOpenGLCoreProfile | omr.MRenderer.kDirectX11
 
     def fragmentName(self):
-        return "ETS_ShaderSurface"
+        print("return fragment name")
+        return "ETS_ToonFragment"
 
     # def getCustomMappings(self, mappings):
     #     sharpnessMapping = omr.MAttributeParameterMapping('sharpness', '', True, True)
     #     mappings.append(sharpnessMapping)
 
     def updateDG(self):
-        node = om.MFnDependencyNode(self.fObject)
-        sharpnessPlug = node.findPlug('sharpness', True)
+        # node = om.MFnDependencyNode(self.fObject)
+        # sharpnessPlug = node.findPlug('sharpness', True)
         # del self.fSharpness[:]
-        # for i in range(sharpnessPlug.numElements()):
+        # elementNum = sharpnessPlug.numElements()
+        # for i in range(elementNum):
         #     sharpnessElem = sharpnessPlug.elementByPhysicalIndex(i)
         #     self.fSharpness.append(sharpnessElem)
-        elementNum = sharpnessPlug.numElements()
-        fragmentMgr = omr.MRenderer.getFragmentManager()
-        if fragmentMgr:
-            fragmentMgr.removeFragment("ETS_ShaderSurface")
-            surfaceShaderBody = fragments.getShaderSurfaceFragment(elementNum)
-            fragmentMgr.addShadeFragmentFromBuffer(surfaceShaderBody, False)
+        # fragmentMgr = omr.MRenderer.getFragmentManager()
+        # if fragmentMgr:
+        #     fragmentMgr.removeFragment("ETS_ToonFragment")
+        #     print("hasFragment ETS_ToonFragment " ,fragmentMgr.hasFragment("ETS_ToonFragment"))
+        #     surfaceShaderBody = fragments.getShaderSurfaceFragment(elementNum)
+        #     fragmentMgr.addShadeFragmentFromBuffer(surfaceShaderBody, False)
+        #     print(fragmentMgr.getFragmentXML("ETS_ToonFragment"))
+        #     print('fragment update')
+        pass
 
 
-    # def updateShader(self, shader, mappings):
+    def updateShader(self, shader, mappings):
     #     if len(self.fResolvedSharpnessName) == 0:
     #         mapping = mappings.findByParameterName("sharpness[2]")
     #         if mappings is not None:
     #             self.fResolvedSharpnessName = mapping.resolvedParameterName()
     #     if len(self.fResolvedSharpnessName) > 0:
     #         shader.setParameter(self.fResolvedSharpnessName, tuple(self.fSharpness))
+        # num = len(self.fSharpness)
+        # for i in range(num):
+        #     mapping = mappings.findByParameterName("sharpness_{}".format(i))
+        #     if mappings is not None:
+        #         fResolvedSharpnessName = mapping.resolvedParameterName()
+        #     shader.setParameter(fResolvedSharpnessName, self.fSharpness[i])
+        # print("finish setting params")
+        pass

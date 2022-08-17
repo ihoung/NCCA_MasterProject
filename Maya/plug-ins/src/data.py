@@ -1,5 +1,4 @@
 import maya.cmds as cmds
-import locator
 import utils
 
 class ShadingLocatorPair(object):
@@ -33,9 +32,38 @@ class EditManager(object):
         return locatorPair
 
     @classmethod
-    def getEditPivot(cls, editLocator):
+    def getEditPairTransforms(cls, editLocator):
         pMesh = cmds.parentConstraint(editLocator, q=1, tl=1)[0]
         for pair in cls.editData[pMesh]:
-            if pair.locTrans == editLocator:
-                return pair.pivotTrans
-        
+            if pair.locTrans == editLocator or pair.pivotTrans == editLocator:
+                return pair.locTrans, pair.pivotTrans
+
+    @classmethod
+    def getEditPairNodes(cls, editLocator):
+        pMesh = cmds.parentConstraint(editLocator, q=1, tl=1)[0]
+        for pair in cls.editData[pMesh]:
+            if pair.locTrans == editLocator or pair.pivotTrans == editLocator:
+                return pair.locator, pair.pivot
+
+    @classmethod
+    def getConstraintedMesh(cls, editLocator):
+        pMeshList = cmds.parentConstraint(editLocator, q=1, tl=1)
+        pMesh = None
+        if len(pMeshList) != 0:
+            pMesh = pMeshList[0]
+        return pMesh
+
+
+class MaterialManager(object):
+    materialData = dict()
+
+    @classmethod
+    def createMeshMaterial(cls, meshTrans):
+        if meshTrans in cls.materialData:
+            return cls.materialData[meshTrans]
+        else:
+            shaderNode = cmds.shadingNode('editableToonShader', asShader=1)
+            sg = cmds.sets(renderable=1, noSurfaceShader=1, em=1, name='editableToonShader1SG')
+            cmds.connectAttr(shaderNode+'.outColor', sg+'.surfaceShader', f=1)
+            cls.materialData[meshTrans] = sg
+            return sg

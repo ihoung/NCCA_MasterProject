@@ -32,19 +32,20 @@ class TestMayaScene(unittest.TestCase):
     def test_fragment(self):
         fragmentMgr = OMR.MRenderer.getFragmentManager()
         fragmentMgr.addFragmentPath(utils.getFragmentDirPath())
-        if fragmentMgr.hasFragment("ETS_ShadingMapFragment"):
-            fragmentMgr.removeFragment("ETS_ShadingMapFragment")
-        if fragmentMgr.hasFragment("ETS_ToonFragment"):
-            fragmentMgr.removeFragment("ETS_ShadingMapFragment")
+        # if fragmentMgr.hasFragment("ETS_ShadingMapFragment"):
+        #     fragmentMgr.removeFragment("ETS_ShadingMapFragment")
+        # if fragmentMgr.hasFragment("ETS_ToonFragment"):
+        #     fragmentMgr.removeFragment("ETS_ShadingMapFragment")
         if fragmentMgr.hasFragment("ETS_ShaderSurface"):
             fragmentMgr.removeFragment("ETS_ShadingMapFragment")
-        fragmentMgr.addShadeFragmentFromFile("ETS_ShadingMapFragment.xml", False)
-        fragmentMgr.addShadeFragmentFromFile("ETS_ToonFragment.xml", False)
+        # fragmentMgr.addShadeFragmentFromFile("ETS_ShadingMapFragment.xml", False)
+        # fragmentMgr.addShadeFragmentFromFile("ETS_ToonFragment.xml", False)
         fragmentMgr.addFragmentGraphFromFile("ETS_ShaderSurface.xml") 
 
     def test_fragmentGenerator(self):
-        frag = fragments.getShaderSurfaceFragment(2)
-        print(frag)
+        # frag = fragments.getShaderSurfaceFragment(3)
+        # print(frag)
+        pass
 
 
 if __name__ == '__main__':

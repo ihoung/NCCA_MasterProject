@@ -106,6 +106,12 @@ def registerNodes(plugin_fn):
         OpenMaya.MGlobal.displayError("Failed to register shading override EditableToonShaderOverride")
 
 def deregisterNodes(plugin_fn):
+    # Remove fragments
+    fragmentMgr = OMR.MRenderer.getFragmentManager()
+    if fragmentMgr:
+        fragmentMgr.removeFragment("ETS_ShaderSurface")
+        fragmentMgr.removeFragment("ETS_ShadingMapFragment")
+        fragmentMgr.removeFragment("ETS_ToonFragment")        
     # Locator node
     try: 
         plugin_fn.deregisterNode(ShadingLocatorNode.id)

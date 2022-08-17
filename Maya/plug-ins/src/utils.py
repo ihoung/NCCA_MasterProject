@@ -1,3 +1,4 @@
+from operator import truediv
 import sys
 import os
 import maya.api.OpenMaya as om
@@ -37,11 +38,35 @@ def getMeshNearbyPosInView(mesh, screenX, screenY):
     res = closestP + (pos - closestP) * 0.1
     return res
 
-def connect2ArrayAttr(srcNode, desNode, srcAttr, desArrayAttr):
-    srcPlug = om.MPlug(srcNode, srcAttr)
-    desArrayPlug = om.MPlug(desNode, desArrayAttr)
-    desPlugElemNum = desArrayPlug.numConnectedElements()
-    targetPlug = desArrayPlug.elementByLogicalIndex(desPlugElemNum+1)
-    MDGMod = om.MDGModifier()   
-    MDGMod.connect(srcPlug, targetPlug)
-    MDGMod.doIt()
+def connect2CmpAttrByName(srcNode, desNode, desCmpAttr):
+    desCmpPlug = om.MPlug(desNode, desCmpAttr)
+    desPlugElemNum = desCmpPlug.numConnectedElements()
+    for index in range(desPlugElemNum+1):
+        childCmpPlug = desCmpPlug.elementByLogicalIndex(index+1)
+        if childCmpPlug.numConnectedChildren() != 0:
+            continue 
+        MDGMod = om.MDGModifier() 
+        srcDGNode =  om.MFnDependencyNode(srcNode)  
+        for i in range(srcDGNode.attributeCount()):
+            srcAttr = srcDGNode.attribute(i)
+            srcAttrName = om.MFnAttribute(srcAttr).name
+            for j in range(childCmpPlug.numChildren()):
+                childPlug = childCmpPlug.child(j)
+                childAttr = om.MFnAttribute(childPlug.attribute())
+                childAttrName = childAttr.name
+                if srcAttrName == childAttrName:
+                    srcPlug = om.MPlug(srcNode, srcAttr)
+                    MDGMod.connect(srcPlug, childPlug)
+                    MDGMod.doIt()
+
+def disconnectCmpAttr(srcNode):
+    MDGMod = om.MDGModifier() 
+    srcDGNode = om.MFnDependencyNode(srcNode)
+    for i in range(srcDGNode.attributeCount()):
+        srcAttr = srcDGNode.attribute(i)
+        srcPlug = om.MPlug(srcNode, srcAttr)
+        connectedDesPlugs = srcPlug.connectedTo(False, True)
+        if len(connectedDesPlugs) != 0:
+            elemPlug = connectedDesPlugs[0].parent()
+            MDGMod.removeMultiInstance(elemPlug, 1)
+            MDGMod.doIt()

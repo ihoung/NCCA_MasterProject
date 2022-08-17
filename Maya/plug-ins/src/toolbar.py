@@ -18,6 +18,7 @@ class EditableShadingShelf(object):
             # Add buttons
             cmds.shelfButton(ann='Assign toon shader', i='', c=EditableShadingCmd.assignToonShader)
             cmds.shelfButton(ann='Add a shading edit', i='locator.png', c=EditableShadingCmd.addEditLocator)
+            cmds.shelfButton(ann='Delete current shading edit', i='locator.png', c=EditableShadingCmd.deleteEditLocator)
             cmds.shelfButton(ann='Edit shading projection pivot', i='', c=EditableShadingCmd.editProjectPivot)
 
     @classmethod
@@ -73,16 +74,10 @@ class EditableShadingCmd(object):
             OpenMaya.MGlobal.displayError('More than one object selected')
             return
         slObj = slist[0]
-        # Check the assigned toon shader
-        slChildList = cmds.listRelatives(slObj)
-        if slChildList is None or len(slChildList) == 0 or cmds.nodeType(slChildList[0]) != 'mesh':
+        material = EditableShadingCmd.getAssignedToonShader(slObj)
+        if not material:
             OpenMaya.MGlobal.displayError('No mesh object selected!')
             return
-        meshName = slChildList[0]
-        shadingGroup = cmds.listConnections(meshName)[0]
-        if shadingGroup is not None:
-        # Get the material attached to the shader group
-            material = [x for x in cmds.ls(cmds.listConnections(shadingGroup), materials=1)][0]
         print('Add edit locator')
         edit = data.EditManager.createEdit(slObj)
         # Connect attributes
@@ -94,7 +89,7 @@ class EditableShadingCmd(object):
             cmds.select(material)
             mslList = OpenMaya.MGlobal.getActiveSelectionList()
             materialNode = mslList.getDependNode(0)
-            utils.connect2ArrayAttr(editNode, materialNode, ShadingLocatorNode.aSharpness, EditableToonShader.aSharpness)
+            utils.connect2CmpAttrByName(editNode, materialNode, EditableToonShader.aEdits)
         else:
             OpenMaya.MGlobal.displayWarning('No specific toon material assgined!')
         # Add to group
@@ -103,6 +98,26 @@ class EditableShadingCmd(object):
             cmds.group(n=groupName, em=1)
         cmds.parent([edit.locTrans, edit.pivotTrans], groupName)
         cmds.select(edit.locTrans)
+
+    @classmethod
+    def deleteEditLocator(cls, *arg):
+        slist = cmds.ls(sl=1)
+        if len(slist) == 0:
+            OpenMaya.MGlobal.displayError('No edit locator selected!')
+            return
+        for slObj in slist:
+            slChildList = cmds.listRelatives(slObj, typ=['shadingLocatorNode', 'shadingPivotNode'])
+            if slChildList is None or len(slChildList) == 0:
+                OpenMaya.MGlobal.displayWarning('Current selected object is not a edit locator!')
+                continue
+            edit, pivot = data.EditManager.getEditPairNodes(slObj)
+            cmds.select(edit)
+            mslList = OpenMaya.MGlobal.getActiveSelectionList()
+            editNode = mslList.getDependNode(0)
+            utils.disconnectCmpAttr(editNode)
+            editTrans, pivotTrans = data.EditManager.getEditPairTransforms(slObj)
+            cmds.delete(editTrans)
+            cmds.delete(pivotTrans)
 
     @classmethod
     def editProjectPivot(cls, *args):
@@ -116,7 +131,7 @@ class EditableShadingCmd(object):
         elif len(cmds.listRelatives(slist[0], typ='shadingLocatorNode')) == 0:
             OpenMaya.MGlobal.displayError('No edit locator selected!')
             return
-        pivotTrans = data.EditManager.getEditPivot(slist[0])
+        editTrans, pivotTrans = data.EditManager.getEditPairTransforms(slist[0])
         cmds.select(pivotTrans)
         cmds.setToolTo('Move')
         
@@ -126,8 +141,31 @@ class EditableShadingCmd(object):
         if len(slist) == 0:
             OpenMaya.MGlobal.displayError('No object selected!')
             return
+        meshTransList = []
+        for slObj in slist:
+            relativeList = cmds.listRelatives(slObj, typ='mesh')
+            if len(relativeList) != 0:
+                meshTransList.append(slObj)
+        if len(meshTransList) == 0:
+            OpenMaya.MGlobal.displayError('No mesh object selected!')
+            return
         print('Assign toon shader')
-        shaderNode = cmds.shadingNode('editableToonShader', asShader=1)
-        sg = cmds.sets(renderable=1, noSurfaceShader=1, em=1, name='editableToonShader1SG')
-        cmds.connectAttr(shaderNode+'.outColor', sg+'.surfaceShader', f=1)
-        cmds.sets(slist, e=1, fe=sg)
+        for meshTrans in meshTransList:
+            sg = data.MaterialManager.createMeshMaterial(meshTrans)
+            cmds.sets([meshTrans], e=1, fe=sg)
+        cmds.select(slist)
+    
+    @staticmethod
+    def getAssignedToonShader(meshTransform):
+        # Check the assigned toon shader
+        relativeList = cmds.listRelatives(meshTransform)
+        if relativeList is None or len(relativeList) == 0 or cmds.nodeType(relativeList[0]) != 'mesh':
+            OpenMaya.MGlobal.displayError('No mesh object selected!')
+            return
+        meshName = relativeList[0]
+        shadingGroup = cmds.listConnections(meshName)[0]
+        if shadingGroup is not None:
+        # Get the material attached to the shader group
+            material = [x for x in cmds.ls(cmds.listConnections(shadingGroup), materials=1)][0]
+        return material
+
