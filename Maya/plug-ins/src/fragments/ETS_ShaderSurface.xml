@@ -18,7 +18,8 @@
         <connect from="ETS_EditParamStruct.intensityGain" to="ETS_ShaderDiffuse.intensityGain" name="intensityGain" />
         <connect from="ETS_EditParamStruct.softness" to="ETS_ShaderDiffuse.softness" name="softness" />
         <connect from="ETS_EditSelector.ETS_EditSelector" to="ETS_EditParamStruct.shadingEditData" name="shadingEditData" />
-        <connect from="ETS_DiffuseAccum.diffuse" to="ETS_ShadingMap.EditIntensity" name="softness" />
+        <connect from="ETS_ShaderDiffuse.output" to="ETS_DiffuseAccum.diffuse" name="diffuseIntensity" />
+        <connect from="ETS_DiffuseAccum.diffuse" to="ETS_ShadingMap.EditIntensity" name="diffuseAccumIntensity" />
         <connect from="ETS_ShadingMap.output" to="ETS_Toon.DiffuseShading" name="diffuseShading" />
     </connections>
     <properties>

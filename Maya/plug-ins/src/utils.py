@@ -58,6 +58,7 @@ def connect2CmpAttrByName(srcNode, desNode, desCmpAttr):
                     srcPlug = om.MPlug(srcNode, srcAttr)
                     MDGMod.connect(srcPlug, childPlug)
                     MDGMod.doIt()
+        break
 
 def disconnectCmpAttr(srcNode):
     MDGMod = om.MDGModifier() 

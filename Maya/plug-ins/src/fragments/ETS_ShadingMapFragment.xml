@@ -8,15 +8,16 @@ Toon renderer. Uses pre-processed shade map to render the final shading color.]]
         <float3 name="Lw" />
         <float  name="ShadeThreshold" />
         <float  name="DiffuseSmoothness" />
-        <float  name="EditIntensity" />
+        <float  name="EditIntensity" flags="constantParam" />
     </properties>
     <values>
         <float3 name="Lw" value="0.0,0.0,0.0" />
         <float name="ShadeThreshold" value="0.500000" />
         <float name="DiffuseSmoothness" value="0.400000" />
+        <float name="EditIntensity" value="0.0" />
     </values>
     <outputs>
-        <float3  name="output" />
+        <float3 name="output" />
     </outputs>
     <parametershare>
     </parametershare>

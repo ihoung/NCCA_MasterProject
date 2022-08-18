@@ -19,6 +19,8 @@ data struct for each shading edit]]>
         <float  name="intensityGain" />
         <float  name="softness" />
     </outputs>
+    <parametershare>
+    </parametershare>
     <implementation  >
     <implementation  render="OGSRenderer" language="Cg" lang_version="2.100000" >
         <function_name val="" />

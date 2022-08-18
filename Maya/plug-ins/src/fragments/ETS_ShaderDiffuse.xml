@@ -46,7 +46,8 @@ float3 ETSShaderDiffuse(
     float softness
 )
 {
-    return uv.x;
+    float average = (anisotropy+sharpness+normalSmooth) / 3.0f;
+    return average;
 }
             ]]>
         </source>
@@ -67,7 +68,8 @@ float3 ETSShaderDiffuse(
     float softness
 )
 {
-    return uv.x;
+    float average = (anisotropy+sharpness+normalSmooth) / 3.0f;
+    return average;
 }
             ]]>
         </source>
@@ -88,7 +90,8 @@ vec3 ETSShaderDiffuse(
     float softness
 )
 {
-    return uv.x;
+    float average = (anisotropy+sharpness+normalSmooth) / 3.0f;
+    return average;
 }
             ]]>
         </source>

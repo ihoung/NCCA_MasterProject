@@ -36,8 +36,8 @@ class TestMayaScene(unittest.TestCase):
         #     fragmentMgr.removeFragment("ETS_ShadingMapFragment")
         # if fragmentMgr.hasFragment("ETS_ToonFragment"):
         #     fragmentMgr.removeFragment("ETS_ShadingMapFragment")
-        if fragmentMgr.hasFragment("ETS_ShaderSurface"):
-            fragmentMgr.removeFragment("ETS_ShadingMapFragment")
+        # if fragmentMgr.hasFragment("ETS_ShaderSurface"):
+        #     fragmentMgr.removeFragment("ETS_ShaderSurface")
         # fragmentMgr.addShadeFragmentFromFile("ETS_ShadingMapFragment.xml", False)
         # fragmentMgr.addShadeFragmentFromFile("ETS_ToonFragment.xml", False)
         fragmentMgr.addFragmentGraphFromFile("ETS_ShaderSurface.xml") 

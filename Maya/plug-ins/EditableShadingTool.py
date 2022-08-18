@@ -110,8 +110,8 @@ def deregisterNodes(plugin_fn):
     fragmentMgr = OMR.MRenderer.getFragmentManager()
     if fragmentMgr:
         fragmentMgr.removeFragment("ETS_ShaderSurface")
-        fragmentMgr.removeFragment("ETS_ShadingMapFragment")
-        fragmentMgr.removeFragment("ETS_ToonFragment")        
+        # fragmentMgr.removeFragment("ETS_ShadingMapFragment")
+        # fragmentMgr.removeFragment("ETS_ToonFragment")        
     # Locator node
     try: 
         plugin_fn.deregisterNode(ShadingLocatorNode.id)

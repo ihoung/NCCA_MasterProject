@@ -16,6 +16,8 @@
     <outputs>
         <struct  name="ETS_EditSelector" struct_name="ETS_EditData" />
     </outputs>
+    <parametershare>
+    </parametershare>
     <implementation  >
     </implementation>
 </fragment>

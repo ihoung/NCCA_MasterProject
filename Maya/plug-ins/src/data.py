@@ -21,6 +21,7 @@ class ShadingLocatorPair(object):
 
 class EditManager(object):
     editData = dict()
+    maxEditNum = 5
 
     @classmethod
     def createEdit(cls, parent):
@@ -60,10 +61,11 @@ class MaterialManager(object):
     @classmethod
     def createMeshMaterial(cls, meshTrans):
         if meshTrans in cls.materialData:
-            return cls.materialData[meshTrans]
-        else:
-            shaderNode = cmds.shadingNode('editableToonShader', asShader=1)
-            sg = cmds.sets(renderable=1, noSurfaceShader=1, em=1, name='editableToonShader1SG')
-            cmds.connectAttr(shaderNode+'.outColor', sg+'.surfaceShader', f=1)
-            cls.materialData[meshTrans] = sg
-            return sg
+            material = cls.materialData[meshTrans]
+            if cmds.objExists(material):
+                return material
+        shaderNode = cmds.shadingNode('editableToonShader', asShader=1)
+        sg = cmds.sets(renderable=1, noSurfaceShader=1, em=1, name='editableToonShader1SG')
+        cmds.connectAttr(shaderNode+'.outColor', sg+'.surfaceShader', f=1)
+        cls.materialData[meshTrans] = sg
+        return sg

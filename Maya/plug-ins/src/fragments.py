@@ -43,10 +43,11 @@ def getShaderSurfaceFragment(editNum):
 Toon renderer. Uses pre-processed shade map to render the final shading color.]]>
     </description>
     <properties>
-        <float3  name="baseColor" /> ^1s
+        <float3  name="baseColor" />
+        <float name="sharpness" />
     </properties>
     <values>
-        <float3 name="baseColor" value="0.5,0.5,0.5" /> ^2s
+        <float3 name="baseColor" value="0.5,0.5,0.5" />
     </values>
     <outputs>
         <float3  name="outColor" />
@@ -59,10 +60,11 @@ Toon renderer. Uses pre-processed shade map to render the final shading color.]]
         <source>
             <![CDATA[
     float3 ETSToonFragment(
-        float3 baseColor ^3s
+        float3 baseColor,
+        float sharpness[]
     )
     {
-        float3 col = baseColor; ^4s
+        float3 col = baseColor;
         return col;
     }
                 ]]>
@@ -73,10 +75,11 @@ Toon renderer. Uses pre-processed shade map to render the final shading color.]]
             <source>
                 <![CDATA[
     float3 ETSToonFragment(
-        float3 baseColor ^3s
+        float3 baseColor,
+        float sharpness[]
     )
     {
-        float3 col = baseColor; ^4s
+        float3 col = baseColor;
         return col;
     }
                 ]]>
@@ -87,10 +90,13 @@ Toon renderer. Uses pre-processed shade map to render the final shading color.]]
             <source>
                 <![CDATA[
     vec3 ETSToonFragment(
-        vec3 baseColor ^3s
+        vec3 baseColor,
+        float sharpness[]
     )
     {
-        vec3 col = baseColor; ^4s
+        vec3 col = baseColor; 
+        float sum = 0.0f;
+        
         return col;
     }
                 ]]>
@@ -99,17 +105,17 @@ Toon renderer. Uses pre-processed shade map to render the final shading color.]]
         </implementation>
     </fragment>
     """)
-    insertBody_1 = ""
-    insertBody_2 = ""
-    insertBody_3 = ""
-    insertBody_4 = ""
-    for i in range(editNum):
-        insertBody_1 += "\n<float  name=\"sharpness_{}\" />".format(i)
-        insertBody_2 += "\n<float name=\"sharpness_{}\" value=\"0.0f\">".format(i)
-        insertBody_3 += ", float sharpness_{}".format(i)
-        insertBody_4 += "\ncol *= sharpness_{};".format(i)
-    surfaceFragmentBody = replace(surfaceFragmentBody, "^1s", insertBody_1)
-    surfaceFragmentBody = replace(surfaceFragmentBody, "^2s", insertBody_2)
-    surfaceFragmentBody = replace(surfaceFragmentBody, "^3s", insertBody_3)
-    surfaceFragmentBody = replace(surfaceFragmentBody, "^4s", insertBody_4)
+    # insertBody_1 = ""
+    # insertBody_2 = ""
+    # insertBody_3 = ""
+    # insertBody_4 = ""
+    # for i in range(editNum):
+    #     insertBody_1 += "\n<float  name=\"sharpness_{}\" />".format(i)
+    #     insertBody_2 += "\n<float name=\"sharpness_{}\" value=\"0.0f\">".format(i)
+    #     insertBody_3 += ", float sharpness_{}".format(i)
+    #     insertBody_4 += "\ncol *= sharpness_{};".format(i)
+    # surfaceFragmentBody = replace(surfaceFragmentBody, "^1s", insertBody_1)
+    # surfaceFragmentBody = replace(surfaceFragmentBody, "^2s", insertBody_2)
+    # surfaceFragmentBody = replace(surfaceFragmentBody, "^3s", insertBody_3)
+    # surfaceFragmentBody = replace(surfaceFragmentBody, "^4s", insertBody_4)
     return surfaceFragmentBody

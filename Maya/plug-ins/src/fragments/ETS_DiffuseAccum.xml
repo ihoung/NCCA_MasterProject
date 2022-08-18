@@ -10,6 +10,8 @@
     <outputs>
         <alias name="diffuse" />
     </outputs>
+    <parametershare>
+    </parametershare>
     <implementation>
     </implementation>
 </fragment>
