@@ -5,24 +5,26 @@ Calculate shading shape for each edit.]]>
     </description>
     <properties>
         <float2 name="uvCoord" flags="varyingInputParam" />
-        <float  name="anisotropy" />
-        <float  name="sharpness" />
-        <float  name="bend" />
-        <float  name="bulge" />
-        <float  name="rotation" />
-        <float  name="normalSmooth" />
-        <float  name="intensityGain" />
-        <float  name="softness" />
+        <float  name="anisotropy" size="50" />
+        <float  name="sharpness" size="50" />
+        <float  name="bend" size="50" />
+        <float  name="bulge" size="50" />
+        <float  name="rotation" size="50" />
+        <float  name="normalSmooth" size="50" />
+        <float  name="intensityGain" size="50" />
+        <float  name="softness" size="50" />
+        <int name="editNum" />
     </properties>
     <values>
-        <float  name="anisotropy" value="0.0" />
+        <!-- <float  name="anisotropy" value="0.0" />
         <float  name="sharpness" value="0.0" />
         <float  name="bend" value="0.0" />
         <float  name="bulge" value="0.0" />
         <float  name="rotation" value="0.0" />
         <float  name="normalSmooth" value="0.0" />
         <float  name="intensityGain" value="0.0" />
-        <float  name="softness" value="0.1" />
+        <float  name="softness" value="0.1" /> -->
+        <int name="editNum" value="0" />
     </values>
     <outputs>
         <float  name="output" />
@@ -34,20 +36,26 @@ Calculate shading shape for each edit.]]>
         <function_name val="ETSShaderDiffuse" />
         <source>
             <![CDATA[
-float3 ETSShaderDiffuse(
+float ETSShaderDiffuse(
     float2 uv,
-    float anisotropy,
-    float sharpness,
-    float bend,
-    float bulge,
-    float rotation,
-    float normalSmooth,
-    float intensityGain,
-    float softness
+    float anisotropy[50],
+    float sharpness[50],
+    float bend[50],
+    float bulge[50],
+    float rotation[50],
+    float normalSmooth[50],
+    float intensityGain[50],
+    float softness[50],
+    int editNum
 )
 {
-    float average = (anisotropy+sharpness+normalSmooth) / 3.0f;
-    return average;
+    float res = 0.0f;
+    for (int i=0;i<editNum;++i)
+    {
+        res += sharpness[i];
+    }
+    res = res / (float)editNum;
+    return res;
 }
             ]]>
         </source>
@@ -56,20 +64,26 @@ float3 ETSShaderDiffuse(
         <function_name val="ETSShaderDiffuse" />
         <source>
             <![CDATA[
-float3 ETSShaderDiffuse(
+float ETSShaderDiffuse(
     float2 uv,
-    float anisotropy,
-    float sharpness,
-    float bend,
-    float bulge,
-    float rotation,
-    float normalSmooth,
-    float intensityGain,
-    float softness
+    float anisotropy[50],
+    float sharpness[50],
+    float bend[50],
+    float bulge[50],
+    float rotation[50],
+    float normalSmooth[50],
+    float intensityGain[50],
+    float softness[50],
+    int editNum
 )
 {
-    float average = (anisotropy+sharpness+normalSmooth) / 3.0f;
-    return average;
+    float res = 0.0f;
+    for (int i=0;i<editNum;++i)
+    {
+        res += sharpness[i];
+    }
+    res = res / (float)editNum;
+    return res;
 }
             ]]>
         </source>
@@ -78,20 +92,26 @@ float3 ETSShaderDiffuse(
         <function_name val="ETSShaderDiffuse" />
         <source>
             <![CDATA[
-vec3 ETSShaderDiffuse(
+float ETSShaderDiffuse(
     vec2 uv,
-    float anisotropy,
-    float sharpness,
-    float bend,
-    float bulge,
-    float rotation,
-    float normalSmooth,
-    float intensityGain,
-    float softness
+    float anisotropy[50],
+    float sharpness[50],
+    float bend[50],
+    float bulge[50],
+    float rotation[50],
+    float normalSmooth[50],
+    float intensityGain[50],
+    float softness[50],
+    int editNum
 )
 {
-    float average = (anisotropy+sharpness+normalSmooth) / 3.0f;
-    return average;
+    float res = 0.0f;
+    for (int i=0;i<editNum;++i)
+    {
+        res += sharpness[i];
+    }
+    res = res / (float)editNum;
+    return res;
 }
             ]]>
         </source>

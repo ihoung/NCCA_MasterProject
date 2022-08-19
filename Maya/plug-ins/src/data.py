@@ -21,7 +21,7 @@ class ShadingLocatorPair(object):
 
 class EditManager(object):
     editData = dict()
-    maxEditNum = 5
+    maxEditNum = 50
 
     @classmethod
     def createEdit(cls, parent):

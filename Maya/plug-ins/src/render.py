@@ -1,4 +1,3 @@
-from pyexpat import native_encoding
 import maya.api.OpenMaya as om
 import maya.api.OpenMayaRender as omr
 
@@ -241,8 +240,24 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
         omr.MPxSurfaceShadingNodeOverride.__init__(self, obj)
 
         self.fObject = obj
-        self.fEdits = []
-        self.fResolvedEditName = []
+        self.fAnisotropy = []
+        self.fSharpness = []
+        self.fBend = []
+        self.fBulge = []
+        self.fRotation = []
+        self.fNormalSmooth = []
+        self.fIntensityGain = []
+        self.fSoftness = []
+        self.fEditNum = 0
+        self.fResolvedAnisotropyName = ""
+        self.fResolvedSharpnessName = ""
+        self.fResolvedBendName = ""
+        self.fResolvedBulgeName = ""
+        self.fResolvedRotationName = ""
+        self.fResolvedNormalSmoothName = ""
+        self.fResolvedIntensityGainName = ""
+        self.fResolvedSoftnessName = ""
+        self.fResolvedEditNumName = ""
 
         # Register fragments with the manager
         shaderMgr = omr.MRenderer.getShaderManager()
@@ -272,13 +287,28 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
     def fragmentName(self):
         return "ETS_ShaderSurface"
 
-    # def getCustomMappings(self, mappings):
-    #     for i in range(data.EditManager.maxEditNum):
-    #         editMapping = omr.MAttributeParameterMapping('edit{}'.format(i), '', True, True)
-    #         mappings.append(editMapping)
+    def getCustomMappings(self, mappings):
+        editMapping = omr.MAttributeParameterMapping('anisotropy', '', True, True)
+        mappings.append(editMapping)
+        editMapping = omr.MAttributeParameterMapping('sharpness', '', True, True)
+        mappings.append(editMapping)
+        editMapping = omr.MAttributeParameterMapping('bend', '', True, True)
+        mappings.append(editMapping)
+        editMapping = omr.MAttributeParameterMapping('bulge', '', True, True)
+        mappings.append(editMapping)
+        editMapping = omr.MAttributeParameterMapping('rotation', '', True, True)
+        mappings.append(editMapping)
+        editMapping = omr.MAttributeParameterMapping('normalSmooth', '', True, True)
+        mappings.append(editMapping)
+        editMapping = omr.MAttributeParameterMapping('intensityGain', '', True, True)
+        mappings.append(editMapping)
+        editMapping = omr.MAttributeParameterMapping('softness', '', True, True)
+        mappings.append(editMapping)
+        editMapping = omr.MAttributeParameterMapping('editNum', '', True, True)
+        mappings.append(editMapping)
 
-    def valueChangeRequiresFragmentRebuild(self, plug):
-        return True
+    # def valueChangeRequiresFragmentRebuild(self, plug):
+    #     return True
 
     def updateDG(self):
         node = om.MFnDependencyNode(self.fObject)
@@ -297,30 +327,118 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
         #     print(fragmentMgr.getFragmentXML("ETS_ToonFragment"))
         #     print('fragment update')        
         editsPlug = node.findPlug('edits', True)
-        del self.fEdits[:]
-        connectedElemNum = editsPlug.numConnectedElements()
-        for i in range(connectedElemNum):
+        del self.fAnisotropy[:]
+        del self.fSharpness[:]
+        del self.fBend[:]
+        del self.fBulge[:]
+        del self.fRotation[:]
+        del self.fNormalSmooth[:]
+        del self.fIntensityGain[:]
+        del self.fSoftness[:]
+        self.fEditNum = editsPlug.numConnectedElements()
+        for i in range(self.fEditNum):
             elemPlug = editsPlug.elementByPhysicalIndex(i)
-            plugValues = []
             for j in range(elemPlug.numChildren()):
-                childValue = elemPlug.child(j).asFloat()
-                plugValues.append(childValue)
-            self.fEdits.append(plugValues)
+                childPlug = elemPlug.child(j)
+                childPlugValue = childPlug.asFloat()
+                childAttrName = om.MFnAttribute(childPlug.attribute()).name
+                if childAttrName == 'anisotropy':
+                    self.fAnisotropy.append(childPlugValue)
+                elif childAttrName == 'sharpness':
+                    self.fSharpness.append(childPlugValue)
+                elif childAttrName == 'bend':
+                    self.fBend.append(childPlugValue)
+                elif childAttrName == 'bulge':
+                    self.fBulge.append(childPlugValue)
+                elif childAttrName == 'rotation':
+                    self.fRotation.append(childPlugValue)
+                elif childAttrName == 'normalSmooth':
+                    self.fNormalSmooth.append(childPlugValue)
+                elif childAttrName == 'intensityGain':
+                    self.fIntensityGain.append(childPlugValue)
+                elif childAttrName == 'softness':
+                    self.fSoftness.append(childPlugValue)
+        # if self.fEditNum < data.EditManager.maxEditNum:
+        #     self.fAnisotropy += [0.0]*(data.EditManager.maxEditNum-self.fEditNum)
+        #     self.fSharpness += [0.0]*(data.EditManager.maxEditNum-self.fEditNum)
+        #     self.fBend += [0.0]*(data.EditManager.maxEditNum-self.fEditNum)
+        #     self.fBulge += [0.0]*(data.EditManager.maxEditNum-self.fEditNum)
+        #     self.fRotation += [0.0]*(data.EditManager.maxEditNum-self.fEditNum)
+        #     self.fNormalSmooth += [0.0]*(data.EditManager.maxEditNum-self.fEditNum)         
+        #     self.fIntensityGain += [0.0]*(data.EditManager.maxEditNum-self.fEditNum)
+        #     self.fSoftness += [0.0]*(data.EditManager.maxEditNum-self.fEditNum)
 
     def updateShader(self, shader, mappings):
-        # for i in range(len(mappings)):
-        #     mapping = mappings[i]
-        #     print(mapping.attributeName(), mapping.parameterName(), mapping.resolvedParameterName())
-        #     print(shader.parameterType(mapping.resolvedParameterName()))
-        print(shader.parameterList())
-        # if len(self.fResolvedEditName) == 0:
-        #     for i in range(data.EditManager.maxEditNum):
-        #         mapping = mappings.findByParameterName("edit{}".format(i))
-        #         if mappings is not None:
-        #             self.fResolvedEditName.append(mapping.resolvedParameterName())
-        # if len(self.fResolvedEditName) > 0:
-        #     dataNum = min(data.EditManager.maxEditNum, len(self.fEdits))
-        #     for i in range(dataNum):
-        #         shader.setArrayParameter(self.fResolvedEditName[i], self.fEdits[i], 8)
-
+        # Edit number
+        if len(self.fResolvedEditNumName) == 0:
+            mapping = mappings.findByParameterName("editNum")
+            if mapping is not None:
+                self.fResolvedEditNumName = mapping.resolvedParameterName()
+        if len(self.fResolvedEditNumName) > 0:
+            # print("editNum",self.fEditNum)
+            shader.setParameter(self.fResolvedEditNumName, self.fEditNum)
+        # Anisotropy
+        if len(self.fResolvedAnisotropyName) == 0:
+            mapping = mappings.findByParameterName("anisotropy")
+            if mapping is not None:
+                self.fResolvedAnisotropyName = mapping.resolvedParameterName()
+        if len(self.fResolvedAnisotropyName) > 0 and self.fEditNum != 0:
+            # print("anisotropy",self.fAnisotropy)
+            shader.setArrayParameter(self.fResolvedAnisotropyName, self.fAnisotropy, len(self.fAnisotropy))
+        # sharpness
+        if len(self.fResolvedSharpnessName) == 0:
+            mapping = mappings.findByParameterName("sharpness")
+            if mapping is not None:
+                self.fResolvedSharpnessName = mapping.resolvedParameterName()
+        if len(self.fResolvedSharpnessName) > 0 and self.fEditNum != 0:
+            # print("sharpness",self.fSharpness)
+            shader.setArrayParameter(self.fResolvedSharpnessName, self.fSharpness, len(self.fSharpness))
+        # bend
+        if len(self.fResolvedBendName) == 0:
+            mapping = mappings.findByParameterName("bend")
+            if mapping is not None:
+                self.fResolvedBendName = mapping.resolvedParameterName()
+        if len(self.fResolvedBendName) > 0 and self.fEditNum != 0:
+            # print("bend",self.fBend)
+            shader.setArrayParameter(self.fResolvedBendName, self.fBend, len(self.fBend))
+        # bulge
+        if len(self.fResolvedBulgeName) == 0:
+            mapping = mappings.findByParameterName("bulge")
+            if mapping is not None:
+                self.fResolvedBulgeName = mapping.resolvedParameterName()
+        if len(self.fResolvedBulgeName) > 0 and self.fEditNum != 0:
+            # print("bulge",self.fBulge)
+            shader.setArrayParameter(self.fResolvedBulgeName, self.fBulge, len(self.fBulge))
+        # rotation
+        if len(self.fResolvedRotationName) == 0:
+            mapping = mappings.findByParameterName("rotation")
+            if mapping is not None:
+                self.fResolvedRotationName = mapping.resolvedParameterName()
+        if len(self.fResolvedRotationName) > 0 and self.fEditNum != 0:
+            # print("rotation",self.fRotation)
+            shader.setArrayParameter(self.fResolvedRotationName, self.fRotation, len(self.fRotation))
+        # normalSmooth
+        if len(self.fResolvedNormalSmoothName) == 0:
+            mapping = mappings.findByParameterName("normalSmooth")
+            if mapping is not None:
+                self.fResolvedNormalSmoothName = mapping.resolvedParameterName()
+        if len(self.fResolvedNormalSmoothName) > 0 and self.fEditNum != 0:
+            # print("normalSmooth",self.fNormalSmooth)
+            shader.setArrayParameter(self.fResolvedNormalSmoothName, self.fNormalSmooth, len(self.fNormalSmooth))
+        # intensityGain
+        if len(self.fResolvedIntensityGainName) == 0:
+            mapping = mappings.findByParameterName("intensityGain")
+            if mapping is not None:
+                self.fResolvedIntensityGainName = mapping.resolvedParameterName()
+        if len(self.fResolvedIntensityGainName) > 0 and self.fEditNum != 0:
+            # print("intensityGain",self.fIntensityGain)
+            shader.setArrayParameter(self.fResolvedIntensityGainName, self.fIntensityGain, len(self.fIntensityGain))
+        # softness
+        if len(self.fResolvedSoftnessName) == 0:
+            mapping = mappings.findByParameterName("softness")
+            if mapping is not None:
+                self.fResolvedSoftnessName = mapping.resolvedParameterName()
+        if len(self.fResolvedSoftnessName) > 0 and self.fEditNum != 0:
+            # print("softness",self.fSoftness)
+            shader.setArrayParameter(self.fResolvedSoftnessName, self.fSoftness, len(self.fSoftness))
 

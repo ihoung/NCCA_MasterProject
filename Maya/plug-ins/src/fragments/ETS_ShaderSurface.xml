@@ -20,7 +20,7 @@
         <connect from="ETS_EditSelector.ETS_EditSelector" to="ETS_EditParamStruct.shadingEditData" name="shadingEditData" />
         <connect from="ETS_ShaderDiffuse.output" to="ETS_DiffuseAccum.diffuse" name="diffuseIntensity" />
         <connect from="ETS_DiffuseAccum.diffuse" to="ETS_ShadingMap.EditIntensity" name="diffuseAccumIntensity" /> -->
-        <connect from="ETS_ShaderDiffuse.output" to="ETS_ShadingMap.DiffuseShading" name="editDiffuse" />
+        <connect from="ETS_ShaderDiffuse.output" to="ETS_ShadingMap.EditIntensity" name="editDiffuse" />
         <connect from="ETS_ShadingMap.output" to="ETS_Toon.DiffuseShading" name="diffuseShading" />
     </connections>
     <properties>
@@ -38,6 +38,15 @@
         <struct  name="edit2" ref="ETS_EditSelector.edit2" />
         <struct  name="edit3" ref="ETS_EditSelector.edit3" />
         <struct  name="edit4" ref="ETS_EditSelector.edit4" /> -->
+        <float  name="anisotropy" ref="ETS_ShaderDiffuse.anisotropy" />
+        <float  name="sharpness" ref="ETS_ShaderDiffuse.sharpness" />
+        <float  name="bend" ref="ETS_ShaderDiffuse.bend" />
+        <float  name="bulge" ref="ETS_ShaderDiffuse.bulge" />
+        <float  name="rotation" ref="ETS_ShaderDiffuse.rotation" />
+        <float  name="normalSmooth" ref="ETS_ShaderDiffuse.normalSmooth" />
+        <float  name="intensityGain" ref="ETS_ShaderDiffuse.intensityGain" />
+        <float  name="softness" ref="ETS_ShaderDiffuse.softness" />
+        <int name="editNum" ref="ETS_ShaderDiffuse.editNum" />
     </properties>
     <values>
         <float3 name="baseColor" value="0.500000,0.500000,0.500000" />
