@@ -272,10 +272,10 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
     def fragmentName(self):
         return "ETS_ShaderSurface"
 
-    def getCustomMappings(self, mappings):
-        for i in range(data.EditManager.maxEditNum):
-            editMapping = omr.MAttributeParameterMapping('edit{}'.format(i), '', True, True)
-            mappings.append(editMapping)
+    # def getCustomMappings(self, mappings):
+    #     for i in range(data.EditManager.maxEditNum):
+    #         editMapping = omr.MAttributeParameterMapping('edit{}'.format(i), '', True, True)
+    #         mappings.append(editMapping)
 
     def valueChangeRequiresFragmentRebuild(self, plug):
         return True
@@ -306,22 +306,21 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
                 childValue = elemPlug.child(j).asFloat()
                 plugValues.append(childValue)
             self.fEdits.append(plugValues)
-        print(self.fEdits)
-
 
     def updateShader(self, shader, mappings):
         # for i in range(len(mappings)):
         #     mapping = mappings[i]
         #     print(mapping.attributeName(), mapping.parameterName(), mapping.resolvedParameterName())
         #     print(shader.parameterType(mapping.resolvedParameterName()))
-        if len(self.fResolvedEditName) == 0:
-            for i in range(data.EditManager.maxEditNum):
-                mapping = mappings.findByParameterName("edit{}".format(i))
-                if mappings is not None:
-                    self.fResolvedEditName.append(mapping.resolvedParameterName())
-        if len(self.fResolvedEditName) > 0:
-            dataNum = min(data.EditManager.maxEditNum, len(self.fEdits))
-            for i in range(dataNum):
-                shader.setArrayParameter(self.fResolvedEditName[i], self.fEdits[i], 8)
+        print(shader.parameterList())
+        # if len(self.fResolvedEditName) == 0:
+        #     for i in range(data.EditManager.maxEditNum):
+        #         mapping = mappings.findByParameterName("edit{}".format(i))
+        #         if mappings is not None:
+        #             self.fResolvedEditName.append(mapping.resolvedParameterName())
+        # if len(self.fResolvedEditName) > 0:
+        #     dataNum = min(data.EditManager.maxEditNum, len(self.fEdits))
+        #     for i in range(dataNum):
+        #         shader.setArrayParameter(self.fResolvedEditName[i], self.fEdits[i], 8)
 
 
