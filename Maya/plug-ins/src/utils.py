@@ -1,4 +1,3 @@
-from operator import truediv
 import sys
 import os
 import maya.api.OpenMaya as om
@@ -38,7 +37,7 @@ def getMeshNearbyPosInView(mesh, screenX, screenY):
     res = closestP + (pos - closestP) * 0.1
     return res
 
-def connect2CmpAttrByName(srcNode, desNode, desCmpAttr):
+def connect2CmpAttrByName(srcNode, srcTransNode, desNode, desCmpAttr):
     desCmpPlug = om.MPlug(desNode, desCmpAttr)
     desPlugElemNum = desCmpPlug.numConnectedElements()
     for index in range(desPlugElemNum+1):
@@ -46,18 +45,22 @@ def connect2CmpAttrByName(srcNode, desNode, desCmpAttr):
         if childCmpPlug.numConnectedChildren() != 0:
             continue 
         MDGMod = om.MDGModifier() 
-        srcDGNode =  om.MFnDependencyNode(srcNode)  
-        for i in range(srcDGNode.attributeCount()):
-            srcAttr = srcDGNode.attribute(i)
-            srcAttrName = om.MFnAttribute(srcAttr).name
-            for j in range(childCmpPlug.numChildren()):
-                childPlug = childCmpPlug.child(j)
-                childAttr = om.MFnAttribute(childPlug.attribute())
-                childAttrName = childAttr.name
+        srcDGNode = om.MFnDependencyNode(srcNode) 
+        srcTransDGNode = om.MFnDependencyNode(srcTransNode)
+        for i in range(childCmpPlug.numChildren()):
+            childPlug = childCmpPlug.child(i)
+            childAttr = om.MFnAttribute(childPlug.attribute())
+            childAttrName = childAttr.name
+            for j in range(srcDGNode.attributeCount()):
+                srcAttr = srcDGNode.attribute(j)
+                srcAttrName = om.MFnAttribute(srcAttr).name
                 if srcAttrName == childAttrName:
                     srcPlug = om.MPlug(srcNode, srcAttr)
                     MDGMod.connect(srcPlug, childPlug)
-                    MDGMod.doIt()
+            if childAttrName == 'editWorldPosition':
+                srcPlug = srcTransDGNode.findPlug('translate', False)
+                MDGMod.connect(srcPlug, childPlug)
+        MDGMod.doIt()
         break
 
 def disconnectCmpAttr(srcNode):

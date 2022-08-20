@@ -26,7 +26,6 @@
     <properties>
         <float3  name="baseColor" ref="ETS_Toon.BaseColor" />
         <float3 name="Nw" ref="ETS_ShadingMap.Nw" semantic="Nw" flags="varyingInputParam" />
-        <float2 name="uvCoord" ref="ETS_ShaderDiffuse.uvCoord" semantic="mayaUvCoordSemantic" flags="varyingInputParam" />
         <float3 name="Lw" ref="ETS_ShadingMap.Lw" />
         <float  name="shadeThreshold" ref="ETS_ShadingMap.ShadeThreshold" />
         <float  name="diffuseSmoothness" ref="ETS_ShadingMap.DiffuseSmoothness" />
@@ -38,6 +37,7 @@
         <struct  name="edit2" ref="ETS_EditSelector.edit2" />
         <struct  name="edit3" ref="ETS_EditSelector.edit3" />
         <struct  name="edit4" ref="ETS_EditSelector.edit4" /> -->
+        <float3  name="editWorldPosition" ref="ETS_ShaderDiffuse.editWorldPosition" />
         <float  name="anisotropy" ref="ETS_ShaderDiffuse.anisotropy" />
         <float  name="sharpness" ref="ETS_ShaderDiffuse.sharpness" />
         <float  name="bend" ref="ETS_ShaderDiffuse.bend" />
@@ -56,6 +56,7 @@
         <float name="diffuseSmoothness" value="0.400000"  />
         <float name="shadeIntensityRatio" value="0.200000"  />
         <!-- <string  name="selector" value="ETS_EditSelector" /> -->
+        <int name="editNum" value="0" />
     </values>
     <outputs>
         <float3  name="outColor" ref="ETS_Toon.outColor" />

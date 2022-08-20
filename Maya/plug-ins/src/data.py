@@ -57,6 +57,7 @@ class EditManager(object):
 
 class MaterialManager(object):
     materialData = dict()
+    maxEditNum = 50
 
     @classmethod
     def createMeshMaterial(cls, meshTrans):

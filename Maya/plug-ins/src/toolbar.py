@@ -86,10 +86,13 @@ class EditableShadingCmd(object):
             cmds.select(edit.locator)
             mslList = OpenMaya.MGlobal.getActiveSelectionList()
             editNode = mslList.getDependNode(0)
+            cmds.select(edit.locTrans)
+            mslList = OpenMaya.MGlobal.getActiveSelectionList()
+            editTransNode = mslList.getDependNode(0)
             cmds.select(material)
             mslList = OpenMaya.MGlobal.getActiveSelectionList()
             materialNode = mslList.getDependNode(0)
-            utils.connect2CmpAttrByName(editNode, materialNode, EditableToonShader.aEdits)
+            utils.connect2CmpAttrByName(editNode, editTransNode, materialNode, EditableToonShader.aEdits)
         else:
             OpenMaya.MGlobal.displayWarning('No specific toon material assgined!')
         # Add to group
