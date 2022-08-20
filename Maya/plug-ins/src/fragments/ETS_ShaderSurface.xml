@@ -25,6 +25,7 @@
     </connections>
     <properties>
         <float3  name="baseColor" ref="ETS_Toon.BaseColor" />
+        <float3 name="Pw" ref="ETS_ShaderDiffuse.Pw" semantic="Pw" flags="varyingInputParam" />
         <float3 name="Nw" ref="ETS_ShadingMap.Nw" semantic="Nw" flags="varyingInputParam" />
         <float3 name="Lw" ref="ETS_ShadingMap.Lw" />
         <float  name="shadeThreshold" ref="ETS_ShadingMap.ShadeThreshold" />
@@ -37,6 +38,7 @@
         <struct  name="edit2" ref="ETS_EditSelector.edit2" />
         <struct  name="edit3" ref="ETS_EditSelector.edit3" />
         <struct  name="edit4" ref="ETS_EditSelector.edit4" /> -->
+        <float4x4  name="editLightSpace" ref="ETS_ShaderDiffuse.editLightSpace" />
         <float3  name="editWorldPosition" ref="ETS_ShaderDiffuse.editWorldPosition" />
         <float  name="anisotropy" ref="ETS_ShaderDiffuse.anisotropy" />
         <float  name="sharpness" ref="ETS_ShaderDiffuse.sharpness" />

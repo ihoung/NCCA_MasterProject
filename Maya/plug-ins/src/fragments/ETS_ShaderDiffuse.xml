@@ -4,6 +4,8 @@
 Calculate shading shape for each edit.]]>
     </description>
     <properties>
+        <float3  name="Pw" flags="isRequirementOnly,varyingInputParam" />
+        <float4x4  name="editLightSpace" size="50" />
         <float3  name="editWorldPosition" size="50" />
         <float  name="anisotropy" size="50" />
         <float  name="sharpness" size="50" />
@@ -37,6 +39,7 @@ Calculate shading shape for each edit.]]>
         <source>
             <![CDATA[
 float ETSShaderDiffuse(
+    float4x4 editLightSpace[50],
     float3 editWorldPosition[50],
     float anisotropy[50],
     float sharpness[50],
@@ -65,6 +68,7 @@ float ETSShaderDiffuse(
         <source>
             <![CDATA[
 float ETSShaderDiffuse(
+    float4x4 editLightSpace[50],
     float3 editWorldPosition[50],
     float anisotropy[50],
     float sharpness[50],
@@ -93,7 +97,8 @@ float ETSShaderDiffuse(
         <source>
             <![CDATA[
 float ETSShaderDiffuse(
-    float3 editWorldPosition[50],
+    mat4 editLightSpace[50],
+    vec3 editWorldPosition[50],
     float anisotropy[50],
     float sharpness[50],
     float bend[50],

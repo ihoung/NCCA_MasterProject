@@ -1,3 +1,4 @@
+from select import select
 import maya.api.OpenMaya as om
 import maya.api.OpenMayaRender as omr
 
@@ -145,12 +146,12 @@ class EditableToonShader(om.MPxNode):
         # nAttr.writable = True
         # nAttr.default = True
 
+        EditableToonShader.aEditLightSpace = mAttr.create('editLightSpace', 'els')
+        nAttr.readable = False
         aEditWorldPosX = nAttr.create('editWorldPositionX', 'wpx', om.MFnNumericData.kFloat)
         aEditWorldPosY = nAttr.create('editWorldPositionY', 'wpy', om.MFnNumericData.kFloat)
         aEditWorldPosZ = nAttr.create('editWorldPositionZ', 'wpz', om.MFnNumericData.kFloat)
         EditableToonShader.aEditWorldPos = nAttr.create('editWorldPosition', 'ewp', aEditWorldPosX, aEditWorldPosY, aEditWorldPosZ)
-        nAttr.readable = False
-        EditableToonShader.aEditLightSpace = mAttr.create('editLightSpace', 'els')
         nAttr.readable = False
         EditableToonShader.aAnisotropy = nAttr.create('anisotropy', 'a', om.MFnNumericData.kFloat)
         nAttr.readable = False
@@ -171,8 +172,8 @@ class EditableToonShader(om.MPxNode):
 
         EditableToonShader.aEdits = cmpAttr.create("edits", "es")
         cmpAttr.array = True
-        cmpAttr.addChild(EditableToonShader.aEditWorldPos)
         cmpAttr.addChild(EditableToonShader.aEditLightSpace)
+        cmpAttr.addChild(EditableToonShader.aEditWorldPos)
         cmpAttr.addChild(EditableToonShader.aAnisotropy)
         cmpAttr.addChild(EditableToonShader.aSharpness)
         cmpAttr.addChild(EditableToonShader.aBend)
@@ -252,6 +253,7 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
         omr.MPxSurfaceShadingNodeOverride.__init__(self, obj)
 
         self.fObject = obj
+        self.fEditLightSpace = []
         self.fEditWorldPos = []
         self.fAnisotropy = []
         self.fSharpness = []
@@ -262,6 +264,7 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
         self.fIntensityGain = []
         self.fSoftness = []
         self.fEditNum = 0
+        self.fResolvedEditLightSpaceName = ""
         self.fResolvedEditWorldPosName = ""
         self.fResolvedAnisotropyName = ""
         self.fResolvedSharpnessName = ""
@@ -302,6 +305,8 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
         return "ETS_ShaderSurface"
 
     def getCustomMappings(self, mappings):
+        editMapping = omr.MAttributeParameterMapping('editLightSpace', '', True, True)
+        mappings.append(editMapping)
         editMapping = omr.MAttributeParameterMapping('editWorldPosition', '', True, True)
         mappings.append(editMapping)
         editMapping = omr.MAttributeParameterMapping('anisotropy', '', True, True)
@@ -329,6 +334,7 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
     def updateDG(self):
         node = om.MFnDependencyNode(self.fObject)
         editsPlug = node.findPlug('edits', True)
+        del self.fEditLightSpace[:]
         del self.fEditWorldPos[:]
         del self.fAnisotropy[:]
         del self.fSharpness[:]
@@ -344,6 +350,11 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
             for j in range(elemPlug.numChildren()):
                 childPlug = elemPlug.child(j)
                 childAttrName = om.MFnAttribute(childPlug.attribute()).name
+                if childAttrName == 'editLightSpace':
+                    childDataHandle = childPlug.asMDataHandle()
+                    childPlugValue = childDataHandle.asMatrix()
+                    self.fEditLightSpace.append(childPlugValue)
+                    continue
                 if childAttrName == 'editWorldPosition':
                     xPlugValue = childPlug.child(0).asFloat()
                     yPlugValue = childPlug.child(1).asFloat()
@@ -370,6 +381,7 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
                 elif childAttrName == 'softness':
                     self.fSoftness.append(childPlugValue)
         if self.fEditNum < data.EditManager.maxEditNum:
+            self.fEditLightSpace += [om.MMatrix()]*(data.EditManager.maxEditNum-self.fEditNum)
             self.fEditWorldPos += [0.0]*(data.EditManager.maxEditNum-self.fEditNum)*3
             self.fAnisotropy += [0.0]*(data.EditManager.maxEditNum-self.fEditNum)
             self.fSharpness += [0.0]*(data.EditManager.maxEditNum-self.fEditNum)
@@ -389,6 +401,14 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
         if len(self.fResolvedEditNumName) > 0:
             # print("editNum",self.fEditNum)
             shader.setParameter(self.fResolvedEditNumName, self.fEditNum)
+        # EditLightSpace
+        if len(self.fResolvedEditLightSpaceName) == 0:
+            mapping = mappings.findByParameterName("editLightSpace")
+            if mapping is not None:
+                self.fResolvedEditLightSpaceName = mapping.resolvedParameterName()
+        if len(self.fResolvedEditLightSpaceName) > 0 :
+            print("editLightSpace",self.fEditLightSpace)
+            shader.setArrayParameter(self.fResolvedEditLightSpaceName, self.fEditLightSpace, data.EditManager.maxEditNum)
         # EditWorldPosition
         if len(self.fResolvedEditWorldPosName) == 0:
             mapping = mappings.findByParameterName("editWorldPosition")
