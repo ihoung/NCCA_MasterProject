@@ -34,6 +34,7 @@ class EditableToonShader(om.MPxNode):
     aNormalSmooth = None
     aIntensityGain = None
     aSoftness = None
+    aEditLightSpace = None
     aEdits = None
 
     # Output attributes
@@ -49,6 +50,7 @@ class EditableToonShader(om.MPxNode):
         lAttr = om.MFnLightDataAttribute()
         cmpAttr = om.MFnCompoundAttribute()
         uAttr = om.MFnUnitAttribute()
+        mAttr = om.MFnMatrixAttribute()
 
         # Create input attributes
         EditableToonShader.aBaseColor = nAttr.createColor("baseColor", "bc")
@@ -148,6 +150,8 @@ class EditableToonShader(om.MPxNode):
         aEditWorldPosZ = nAttr.create('editWorldPositionZ', 'wpz', om.MFnNumericData.kFloat)
         EditableToonShader.aEditWorldPos = nAttr.create('editWorldPosition', 'ewp', aEditWorldPosX, aEditWorldPosY, aEditWorldPosZ)
         nAttr.readable = False
+        EditableToonShader.aEditLightSpace = mAttr.create('editLightSpace', 'els')
+        nAttr.readable = False
         EditableToonShader.aAnisotropy = nAttr.create('anisotropy', 'a', om.MFnNumericData.kFloat)
         nAttr.readable = False
         EditableToonShader.aSharpness = nAttr.create('sharpness', 's', om.MFnNumericData.kFloat)
@@ -168,6 +172,7 @@ class EditableToonShader(om.MPxNode):
         EditableToonShader.aEdits = cmpAttr.create("edits", "es")
         cmpAttr.array = True
         cmpAttr.addChild(EditableToonShader.aEditWorldPos)
+        cmpAttr.addChild(EditableToonShader.aEditLightSpace)
         cmpAttr.addChild(EditableToonShader.aAnisotropy)
         cmpAttr.addChild(EditableToonShader.aSharpness)
         cmpAttr.addChild(EditableToonShader.aBend)

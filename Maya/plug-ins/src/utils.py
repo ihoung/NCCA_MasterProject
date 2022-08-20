@@ -57,9 +57,9 @@ def connect2CmpAttrByName(srcNode, srcTransNode, desNode, desCmpAttr):
                 if srcAttrName == childAttrName:
                     srcPlug = om.MPlug(srcNode, srcAttr)
                     MDGMod.connect(srcPlug, childPlug)
-            if childAttrName == 'editWorldPosition':
-                srcPlug = srcTransDGNode.findPlug('translate', False)
-                MDGMod.connect(srcPlug, childPlug)
+            # if childAttrName == 'editWorldPosition':
+            #     srcPlug = srcTransDGNode.findPlug('translate', False)
+            #     MDGMod.connect(srcPlug, childPlug)
         MDGMod.doIt()
         break
 

@@ -83,10 +83,10 @@ class EditableShadingCmd(object):
         # Connect attributes
         if cmds.nodeType(material) == 'editableToonShader':
             # cmds.connectAttr(edit.locator+'.sharpness', material+'.sharpness')
-            cmds.select(edit.locator)
+            cmds.select(edit.edit)
             mslList = OpenMaya.MGlobal.getActiveSelectionList()
             editNode = mslList.getDependNode(0)
-            cmds.select(edit.locTrans)
+            cmds.select(edit.editTrans)
             mslList = OpenMaya.MGlobal.getActiveSelectionList()
             editTransNode = mslList.getDependNode(0)
             cmds.select(material)
@@ -99,8 +99,8 @@ class EditableShadingCmd(object):
         groupName = cmds.ls(slObj, sn=1)[0] + '_shadingEdits'
         if not cmds.objExists(groupName):
             cmds.group(n=groupName, em=1)
-        cmds.parent([edit.locTrans, edit.pivotTrans], groupName)
-        cmds.select(edit.locTrans)
+        cmds.parent([edit.editTrans, edit.originTrans], groupName)
+        cmds.select(edit.editTrans)
 
     @classmethod
     def deleteEditLocator(cls, *arg):

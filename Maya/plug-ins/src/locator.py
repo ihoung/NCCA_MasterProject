@@ -24,6 +24,8 @@ class ShadingLocatorNode(OMUI.MPxLocatorNode):
     drawRegistrantId = "ShadingLocatorNodePlugin"
 
     # Attributes
+    aEditWorldPos = None
+    aOriginWorldPos = None
     aAnisotropy = None
     aSharpness = None
     aBend = None
@@ -32,6 +34,7 @@ class ShadingLocatorNode(OMUI.MPxLocatorNode):
     aNormalSmooth = None
     aIntensityGain = None
     aSoftness = None
+    aEditLightSpace = None
 
     @staticmethod
     def creator():
@@ -41,6 +44,27 @@ class ShadingLocatorNode(OMUI.MPxLocatorNode):
     def initialize():
         nAttr = OM.MFnNumericAttribute()
         uAttr = OM.MFnUnitAttribute()
+        mAttr = OM.MFnMatrixAttribute()
+
+        aEditWorldPosX = nAttr.create('editWorldPositionX', 'ewpx', OM.MFnNumericData.kFloat)
+        aEditWorldPosY = nAttr.create('editWorldPositionY', 'ewpy', OM.MFnNumericData.kFloat)
+        aEditWorldPosZ = nAttr.create('editWorldPositionZ', 'ewpz', OM.MFnNumericData.kFloat)
+        ShadingLocatorNode.aEditWorldPos = nAttr.create('editWorldPosition', 'ewp', 
+                                            aEditWorldPosX, aEditWorldPosY, aEditWorldPosZ)
+        nAttr.keyable = False
+        nAttr.storable = True
+        nAttr.readable = True
+        nAttr.writable = True
+
+        aOriginWorldPosX = nAttr.create('originWorldPositionX', 'owpx', OM.MFnNumericData.kFloat)
+        aOriginWorldPosY = nAttr.create('originWorldPositionY', 'owpy', OM.MFnNumericData.kFloat)
+        aOriginWorldPosZ = nAttr.create('originWorldPositionZ', 'owpz', OM.MFnNumericData.kFloat)
+        ShadingLocatorNode.aOriginWorldPos = nAttr.create('originWorldPosition', 'owp', 
+                                            aOriginWorldPosX, aOriginWorldPosY, aOriginWorldPosZ)
+        nAttr.keyable = False
+        nAttr.storable = True
+        nAttr.readable = False
+        nAttr.writable = True
 
         ShadingLocatorNode.aAnisotropy = nAttr.create('anisotropy', 'a', OM.MFnNumericData.kFloat)
         nAttr.keyable = True
@@ -114,6 +138,14 @@ class ShadingLocatorNode(OMUI.MPxLocatorNode):
         nAttr.setSoftMax(10.0)
         nAttr.default = 0.1
 
+        ShadingLocatorNode.aEditLightSpace = mAttr.create('editLightSpace', 'els')
+        nAttr.keyable = False
+        nAttr.storable = True
+        nAttr.readable = True
+        nAttr.writable = False
+
+        ShadingLocatorNode.addAttribute(ShadingLocatorNode.aEditWorldPos)
+        ShadingLocatorNode.addAttribute(ShadingLocatorNode.aOriginWorldPos)
         ShadingLocatorNode.addAttribute(ShadingLocatorNode.aAnisotropy)
         ShadingLocatorNode.addAttribute(ShadingLocatorNode.aSharpness)
         ShadingLocatorNode.addAttribute(ShadingLocatorNode.aBend)
@@ -122,7 +154,10 @@ class ShadingLocatorNode(OMUI.MPxLocatorNode):
         ShadingLocatorNode.addAttribute(ShadingLocatorNode.aNormalSmooth)
         ShadingLocatorNode.addAttribute(ShadingLocatorNode.aIntensityGain)
         ShadingLocatorNode.addAttribute(ShadingLocatorNode.aSoftness)
+        ShadingLocatorNode.addAttribute(ShadingLocatorNode.aEditLightSpace)
 
+        ShadingLocatorNode.attributeAffects(ShadingLocatorNode.aEditWorldPos, ShadingLocatorNode.aEditLightSpace)
+        ShadingLocatorNode.attributeAffects(ShadingLocatorNode.aOriginWorldPos, ShadingLocatorNode.aEditLightSpace)
         # ShadingLocatorNode.attributeAffects(ShadingLocatorNode.aAnisotropy, ShadingLocatorNode.aOutputData)
         # ShadingLocatorNode.attributeAffects(ShadingLocatorNode.aSharpness, ShadingLocatorNode.aOutputData)
         # ShadingLocatorNode.attributeAffects(ShadingLocatorNode.aBend, ShadingLocatorNode.aOutputData)
@@ -137,6 +172,31 @@ class ShadingLocatorNode(OMUI.MPxLocatorNode):
 
     def compute(self, plug, data):
         OMUI.MPxLocatorNode.compute(self, plug, data)
+
+        if plug != self.aEditLightSpace:
+            return None
+
+        originLocation = data.inputValue(self.aOriginWorldPos).asFloatVector()
+        originLocation = OM.MFloatPoint(originLocation)
+        editLocation = data.inputValue(self.aEditWorldPos).asFloatVector()
+        editLocation = OM.MFloatPoint(editLocation)
+
+        lightZ = (editLocation - originLocation).normalize()
+        worldUp = OM.MFloatVector(0.0, 1.0, 0.0)
+        lightX = (worldUp ^ lightZ).normalize()
+        lightY = (lightZ ^ lightX).normalize()
+
+        mData = [
+            lightX.x, lightY.x, lightZ.x, 0.0,
+            lightX.y, lightY.y, lightZ.y, 0.0,
+            lightX.z, lightY.z, lightZ.z, 0.0,
+            0.0, 0.0, 0.0, 0.0
+        ]
+        lsMatrix = OM.MFloatMatrix(mData)
+
+        lightSpaceHandle = data.outputValue(self.aEditLightSpace)
+        lightSpaceHandle.setMFloatMatrix(lsMatrix)
+        lightSpaceHandle.setClean()
 
     def draw(self, view, path, style, status):
         global nodeLineList
