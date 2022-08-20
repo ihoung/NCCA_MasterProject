@@ -192,7 +192,7 @@ class ShadingLocatorNode(OMUI.MPxLocatorNode):
             lightX.z, lightY.z, lightZ.z, 0.0,
             0.0, 0.0, 0.0, 0.0
         ]
-        print("mData: ", mData)
+        # print("mData: ", mData)
         lsMatrix = OM.MFloatMatrix(mData)
 
         lightSpaceHandle = data.outputValue(self.aEditLightSpace)

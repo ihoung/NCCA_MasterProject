@@ -38,6 +38,40 @@ Calculate shading shape for each edit.]]>
         <function_name val="ETSShaderDiffuse" />
         <source>
             <![CDATA[
+float2x2 rot2D(float rad)
+{
+    return float2x2(cos(rad), -sin(rad), sin(rad), cos(rad));
+}
+float editDiffuse(
+    float3 pw,
+    float4x4 els,
+    float3 ewp,
+    float a,
+    float s,
+    float wy,
+    float wx,
+    float rot,
+    float ns
+)
+{
+    float PI = radians(180);
+
+    float3 lsVec = mul(normalize(pw-ewp), float3x3(els));
+    lsVec = normalize(lsVec);
+    float lsR = 1.0f / cos(lsVec.z);
+    float lsTh = 1.0f / tan(lsVec.y / lsVec.x);
+    float pu = lsR * cos(lsTh);
+    float pv = lsR * sin(lsTh);
+    float2 pUV = float2(pu, pv);
+
+    float2 w = float(wy, wx);
+    float thw = 10.0f * dot(w, mul(pUV, rot2D(rot)));
+    float2 UVw = w + mul(mul(pUV, rot2D(rot)) - w, rot2D(thw));
+    float Iw = exp(-a * exp2(UVw.x) - 1.0f / a * pow(abs(UVw.y), 2-s));
+
+    float cTh = 1.0f;
+    if (thw <= -PI/2.0f || thw >= PI/2.0f) cTh = 0.0f;
+}
 float ETSShaderDiffuse(
     float4x4 editLightSpace[50],
     float3 editWorldPosition[50],
@@ -53,7 +87,7 @@ float ETSShaderDiffuse(
 )
 {
     float res = 0.0f;
-    for (int i=0;i<editNum;++i)
+    for (int i=0;i<editNum;i++)
     {
         res += sharpness[i];
     }
@@ -82,7 +116,7 @@ float ETSShaderDiffuse(
 )
 {
     float res = 0.0f;
-    for (int i=0;i<editNum;++i)
+    for (int i=0;i<editNum;i++)
     {
         res += sharpness[i];
     }
@@ -111,7 +145,7 @@ float ETSShaderDiffuse(
 )
 {
     float res = 0.0f;
-    for (int i=0;i<editNum;++i)
+    for (int i=0;i<editNum;i++)
     {
         res += sharpness[i];
     }

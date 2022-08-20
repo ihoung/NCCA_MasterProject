@@ -407,7 +407,7 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
             if mapping is not None:
                 self.fResolvedEditLightSpaceName = mapping.resolvedParameterName()
         if len(self.fResolvedEditLightSpaceName) > 0 :
-            print("editLightSpace",self.fEditLightSpace)
+            # print("editLightSpace",self.fEditLightSpace)
             shader.setArrayParameter(self.fResolvedEditLightSpaceName, self.fEditLightSpace, data.EditManager.maxEditNum)
         # EditWorldPosition
         if len(self.fResolvedEditWorldPosName) == 0:
