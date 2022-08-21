@@ -1,0 +1,177 @@
+uniform vec3 NormalMap;
+
+uniform float ShadeThreshold;
+
+uniform float DiffuseSmoothness;
+
+/// Samplers
+// uniform sampler2D normalMapSamp = sampler_state { texture = <NormalMap>; };
+
+// uniform sampler2D shadowDepthSamp = sampler_state {texture = <ShadowMapTexture>; };
+
+/// light
+uniform vec4 lightDir : DIRECTION
+<
+    string UIName = "Light 0";
+	string Object = "Light0_Directional";
+	string Space = "World";
+> = { 100.0f, 100.0f, 100.0f, 0.0f };
+
+// Texture2D lightShadowMap : SHADOWMAP
+// <
+// 	string Object = "Light0_Directional";
+// 	string UIWidget = "None";
+// >;
+
+// float4x4 lightMatrix : SHADOWMAPMATRIX		
+// < 
+//     string Object = "Light0_Directional";
+//     string UIWidget = "None"; 
+// >;
+
+#define SHADOW_FILTER_TAPS_CNT 10
+uniform vec2 SuperFilterTaps[SHADOW_FILTER_TAPS_CNT] 
+< 
+	string UIWidget = "None"; 
+> = 
+{ 
+    {-0.84052f, -0.073954f}, 
+    {-0.326235f, -0.40583f}, 
+    {-0.698464f, 0.457259f}, 
+    {-0.203356f, 0.6205847f}, 
+    {0.96345f, -0.194353f}, 
+    {0.473434f, -0.480026f}, 
+    {0.519454f, 0.767034f}, 
+    {0.185461f, -0.8945231f}, 
+    {0.507351f, 0.064963f}, 
+    {-0.321932f, 0.5954349f} 
+};
+
+// uniform float shadowMapTexelSize 
+// < 
+// 	string UIWidget = "None"; 
+// > = {0.00195313}; // (1.0f / 512)
+
+// float shadowDepthBias : ShadowMapBias
+// <
+//     string UIGroup = "Lighting";
+//     string UIWidget = "Slider";
+//     float UIMin = 0.000;
+//     float UISoftMax = 0.1;
+//     float UIStep = 0.001;
+//     string UIName = "Shadow Bias";
+// > = {0.01f};
+
+
+// transform object vertices to world-space:
+uniform mat4 gWorldXf : World;
+// transform object normals, tangents, & binormals to world-space:
+uniform mat4 gWorldITXf : WorldInverseTranspose;
+// transform object vertices to view space and project them in perspective:
+uniform mat4 gWvpXf : WorldViewProjection;
+// provide tranform from "view" or "eye" coords back to world-space:
+uniform mat4 gViewIXf : ViewInverse;
+
+
+// input from application
+attribute app2vertex
+{
+    vec4 position : POSITION;
+    vec2 texCoord : TEXCOORD0;
+    vec4 normal : NORMAL;
+    vec4 binormal : BINORMAL0;
+    vec4 tangent : TANGENT0;
+};
+
+// output to pixel shader
+attribute vertex2pixel
+{
+    vec2 VSUV;
+    vec3 worldNormal;
+    vec3 worldBinormal;
+    vec3 worldTangent;
+    vec3 worldPosition;
+};
+
+attribute pixelOut
+{
+    float diffuseOut : COLOR0;
+}
+
+// float lightShadow(float4x4 LightViewPrj, uniform Texture2D ShadowMapTexture, float3 VertexWorldPosition)
+// {	
+// 	float shadow = 1.0f;
+
+// 	float4 Pndc = mul( float4(VertexWorldPosition.xyz,1.0) ,  LightViewPrj); 
+// 	Pndc.xyz /= Pndc.w; 
+// 	if ( Pndc.x > -1.0f && Pndc.x < 1.0f && Pndc.y  > -1.0f   
+// 		&& Pndc.y <  1.0f && Pndc.z >  0.0f && Pndc.z <  1.0f ) 
+// 	{ 
+// 		vec2 uv = 0.5f * Pndc.xy + 0.5f; 
+// 		uv = vec2(uv.x,(1.0-uv.y));	// maya flip Y
+// 		float z = Pndc.z - shadowDepthBias / Pndc.w; 
+
+// 		// we'll sample a bunch of times to smooth our shadow a little bit around the edges:
+// 		shadow = 0.0f;
+// 		for(int i=0; i<SHADOW_FILTER_TAPS_CNT; ++i) 
+// 		{ 
+// 			vec2 suv = uv + (SuperFilterTaps[i] * shadowMapTexelSize);
+// 			float val = z - ShadowMapTexture.SampleLevel(SamplerShadowDepth, suv, 0 ).x;
+// 			shadow += (val >= 0.0f) ? 0.0f : (1.0f / SHADOW_FILTER_TAPS_CNT);
+// 		}
+
+// 		// a single sample would be:
+// 		// shadow = 1.0f;
+// 		// float val = z - ShadowMapTexture.SampleLevel(SamplerShadowDepth, uv, 0 ).x;
+// 		// shadow = (val >= 0.0f)? 0.0f : 1.0f;
+		
+// 		// shadow = lerp(1.0f, shadow, shadowMultiplier);  
+// 	} 
+
+// 	return shadow;
+// }
+
+/*********************************/
+/********VERTEX SHADER**********/
+/*********************************/
+GLSLShader VS_ShadingMap
+{
+    void main()
+    {    
+        gl_Position = mul(position, gWvpXf);
+        worldPosition = mul(position, gWorldXf).xyz;
+        worldNormal = mul(normal, gWorldITXf).xyz;
+        worldBinormal = mul(binormal, gWorldITXf).xyz;
+        worldTangent = mul(tangent, gWorldITXf).xyz;
+        VSUV = vec2(texCoord.x, 1.0-texCoord.y);
+    }
+}
+
+/*********************************/
+/********PIXEL SHADER**********/
+/*********************************/
+GLSLShader PS_2ShadingMap
+{
+    void main()
+    {    
+        vec3 N = (NormalMap.z * worldNormal) + (NormalMap.y * worldBinormal) + (NormalMap.x * worldTangent);
+        N = normalize(N);
+        vec3 L = normalize(lightDir.xyz);
+        float diffuse = dot(N, L);
+        // float shadow = lightShadow(lightMatrix, lightShadowMap, IN.worldPosition);
+        float diffuseSmooth = pow(DiffuseSmoothness, 5);
+        float smoothedDiffuse = smoothstep(ShadeThreshold-diffuseSmooth, ShadeThreshold+diffuseSmooth, diffuse);
+        float result = lerp(0.0f, 1.0f, smoothedDiffuse/**shadow*/);
+        diffuseOut = result;
+    }
+}
+
+
+technique TwoTones
+{
+    pass p0
+    {
+        VertexShader(in app2vertex, out vertex2pixel) = VS_ShadingMap;
+        PixelShader(in vertex2pixel, out pixelOut) = PS_2ShadingMap;
+    }
+}

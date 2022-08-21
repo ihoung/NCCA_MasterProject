@@ -1,0 +1,77 @@
+<fragment  uiName="ETS_ToonFragment" name="ETS_ToonFragment" type="plumbing" class="ShadeFragment" version="1.0" feature_level="30" >
+    <description>
+<![CDATA[
+Toon renderer. Uses pre-processed shade map to render the final shading color.]]>
+    </description>
+    <properties>
+        <float3  name="BaseColor" />
+        <float3  name="DiffuseShading" />
+        <float3 name="diffuseI" />
+        <float  name="ShadeIntensityRatio" />
+    </properties>
+    <values>
+        <float3 name="BaseColor" value="0.5,0.5,0.5" />
+        <float3  name="DiffuseShading" value="1.0,1.0,1.0" />
+        <float3 name="diffuseI" value="1.0,1.0,1.0" />
+        <float name="ShadeIntensityRatio" value="0.200000"  />
+    </values>
+    <outputs>
+        <float3  name="outColor" />
+    </outputs>
+    <parametershare>
+    </parametershare>
+    <implementation >
+    <implementation render="OGSRenderer" language="Cg" lang_version="2.100000" >
+        <function_name val="ETSToonFragment" />
+        <source>
+            <![CDATA[
+float3 ETSToonFragment(
+    float3 BaseColor,
+    float3 DiffuseShading,
+    float3 diffuseI,
+    float ShadeIntensityRatio)
+{
+    float3 col = BaseColor;
+    col *= lerp(ShadeIntensityRatio, 1.0f, DiffuseShading.r) * diffuseI;
+    return col;
+}
+            ]]>
+        </source>
+    </implementation>
+    <implementation render="OGSRenderer" language="HLSL" lang_version="11.000000" >
+        <function_name val="ETSToonFragment" />
+        <source>
+            <![CDATA[
+float3 ETSToonFragment(
+    float3 BaseColor,
+    float3 DiffuseShading,
+    float3 diffuseI,
+    float ShadeIntensityRatio)
+{
+    float3 col = BaseColor;
+    col *= lerp(ShadeIntensityRatio, 1.0f, DiffuseShading.r) * diffuseI;
+    return col;
+}
+            ]]>
+        </source>
+    </implementation>
+    <implementation render="OGSRenderer" language="GLSL" lang_version="3.000000" >
+        <function_name val="ETSToonFragment" />
+        <source>
+            <![CDATA[
+vec3 ETSToonFragment(
+    vec3 BaseColor,
+    vec3 DiffuseShading,
+    vec3 diffuseI,
+    float ShadeIntensityRatio)
+{
+    vec3 col = BaseColor;
+    col *= lerp(ShadeIntensityRatio, 1.0f, DiffuseShading.r) * diffuseI;    
+    return col;
+}
+            ]]>
+        </source>
+    </implementation>
+    </implementation>
+</fragment>
+
