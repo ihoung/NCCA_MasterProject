@@ -16,10 +16,10 @@ class EditableShadingShelf(object):
         if not (cls.shelf_instance and cmds.shelfLayout(cls.shelf_instance, q=1, ex=1)):
             cls.shelf_instance = cmds.shelfLayout(cls.SHELF_NAME, p="ShelfLayout")
             # Add buttons
-            cmds.shelfButton(ann='Assign toon shader', i='', c=EditableShadingCmd.assignToonShader)
-            cmds.shelfButton(ann='Add a shading edit', i='locator.png', c=EditableShadingCmd.addEditLocator)
-            cmds.shelfButton(ann='Delete current shading edit', i='locator.png', c=EditableShadingCmd.deleteEditLocator)
-            cmds.shelfButton(ann='Edit shading projection pivot', i='', c=EditableShadingCmd.editProjectPivot)
+            cmds.shelfButton(ann='Assign toon shader', i=utils.getImgPath('1'), c=EditableShadingCmd.assignToonShader)
+            cmds.shelfButton(ann='Add a shading edit', i=utils.getImgPath('2'), c=EditableShadingCmd.addEditLocator)
+            cmds.shelfButton(ann='Delete current shading edit', i=utils.getImgPath('3'), c=EditableShadingCmd.deleteEditLocator)
+            cmds.shelfButton(ann='Edit shading projection pivot', i=utils.getImgPath('4'), c=EditableShadingCmd.editProjectPivot)
 
     @classmethod
     def createShelf(cls, args):
