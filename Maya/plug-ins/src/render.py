@@ -374,7 +374,7 @@ class EditableToonShaderOverride(omr.MPxSurfaceShadingNodeOverride):
         del self.fNormalSmooth[:]
         del self.fIntensityGain[:]
         del self.fSoftness[:]
-        self.fEditNum = editsPlug.numConnectedElements()
+        self.fEditNum = min(editsPlug.numConnectedElements(), data.EditManager.maxEditNum)
         for i in range(self.fEditNum):
             elemPlug = editsPlug.elementByPhysicalIndex(i)
             for j in range(elemPlug.numChildren()):

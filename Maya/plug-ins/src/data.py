@@ -57,7 +57,7 @@ class ShadingLocatorPair(object):
 
 class EditManager(object):
     editData = dict()
-    maxEditNum = 50
+    maxEditNum = 1
 
     @classmethod
     def createEdit(cls, parent):
@@ -93,7 +93,7 @@ class EditManager(object):
 
 class MaterialManager(object):
     materialData = dict()
-    maxEditNum = 50
+    maxEditNum = 1
 
     @classmethod
     def createMeshMaterial(cls, meshTrans):
