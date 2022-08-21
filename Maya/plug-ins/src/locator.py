@@ -34,6 +34,7 @@ class ShadingLocatorNode(OMUI.MPxLocatorNode):
     aNormalSmooth = None
     aIntensityGain = None
     aSoftness = None
+    aEditType = None
     aEditLightSpace = None
 
     @staticmethod
@@ -45,6 +46,7 @@ class ShadingLocatorNode(OMUI.MPxLocatorNode):
         nAttr = OM.MFnNumericAttribute()
         uAttr = OM.MFnUnitAttribute()
         mAttr = OM.MFnMatrixAttribute()
+        eAttr = OM.MFnEnumAttribute()
 
         aEditWorldPosX = nAttr.create('editWorldPositionX', 'ewpx', OM.MFnNumericData.kFloat)
         aEditWorldPosY = nAttr.create('editWorldPositionY', 'ewpy', OM.MFnNumericData.kFloat)
@@ -55,6 +57,7 @@ class ShadingLocatorNode(OMUI.MPxLocatorNode):
         nAttr.storable = True
         nAttr.readable = True
         nAttr.writable = True
+        nAttr.hidden = True
 
         aOriginWorldPosX = nAttr.create('originWorldPositionX', 'owpx', OM.MFnNumericData.kFloat)
         aOriginWorldPosY = nAttr.create('originWorldPositionY', 'owpy', OM.MFnNumericData.kFloat)
@@ -63,8 +66,9 @@ class ShadingLocatorNode(OMUI.MPxLocatorNode):
                                             aOriginWorldPosX, aOriginWorldPosY, aOriginWorldPosZ)
         nAttr.keyable = False
         nAttr.storable = True
-        nAttr.readable = False
+        nAttr.readable = True
         nAttr.writable = True
+        nAttr.hidden = True
 
         ShadingLocatorNode.aAnisotropy = nAttr.create('anisotropy', 'a', OM.MFnNumericData.kFloat)
         nAttr.keyable = True
@@ -138,12 +142,22 @@ class ShadingLocatorNode(OMUI.MPxLocatorNode):
         nAttr.setSoftMax(10.0)
         nAttr.default = 0.1
 
-        ShadingLocatorNode.aEditLightSpace = mAttr.create('editLightSpace', 'els')
-        nAttr.keyable = False
-        nAttr.storable = True
-        nAttr.readable = True
-        nAttr.writable = False
+        ShadingLocatorNode.aEditType = eAttr.create('editType', 'et')
+        eAttr.addField('Intensity', 0)
+        eAttr.addField('Mask', 1)
+        eAttr.keyable = False
+        eAttr.storable = True
+        eAttr.readable = True
+        eAttr.writable = True
 
+        ShadingLocatorNode.aEditLightSpace = mAttr.create('editLightSpace', 'els')
+        mAttr.keyable = False
+        mAttr.storable = True
+        mAttr.readable = True
+        mAttr.writable = False
+        mAttr.hidden = True
+
+        ShadingLocatorNode.addAttribute(ShadingLocatorNode.aEditLightSpace)
         ShadingLocatorNode.addAttribute(ShadingLocatorNode.aEditWorldPos)
         ShadingLocatorNode.addAttribute(ShadingLocatorNode.aOriginWorldPos)
         ShadingLocatorNode.addAttribute(ShadingLocatorNode.aAnisotropy)
@@ -154,7 +168,7 @@ class ShadingLocatorNode(OMUI.MPxLocatorNode):
         ShadingLocatorNode.addAttribute(ShadingLocatorNode.aNormalSmooth)
         ShadingLocatorNode.addAttribute(ShadingLocatorNode.aIntensityGain)
         ShadingLocatorNode.addAttribute(ShadingLocatorNode.aSoftness)
-        ShadingLocatorNode.addAttribute(ShadingLocatorNode.aEditLightSpace)
+        ShadingLocatorNode.addAttribute(ShadingLocatorNode.aEditType)
 
         ShadingLocatorNode.attributeAffects(ShadingLocatorNode.aEditWorldPos, ShadingLocatorNode.aEditLightSpace)
         ShadingLocatorNode.attributeAffects(ShadingLocatorNode.aOriginWorldPos, ShadingLocatorNode.aEditLightSpace)

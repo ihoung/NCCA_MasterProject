@@ -7,6 +7,7 @@ Calculate shading shape for each edit.]]>
         <float3  name="Pw" flags="isRequirementOnly,varyingInputParam" />
         <float4x4  name="editLightSpace" size="50" />
         <float3  name="editWorldPosition" size="50" />
+        <float3  name="originWorldPosition" size="50" />
         <float  name="anisotropy" size="50" />
         <float  name="sharpness" size="50" />
         <float  name="bend" size="50" />
@@ -16,6 +17,7 @@ Calculate shading shape for each edit.]]>
         <float  name="intensityGain" size="50" />
         <float  name="softness" size="50" />
         <int name="editNum" />
+        <float  name="influenceDistance" />
     </properties>
     <values>
         <!-- <float  name="anisotropy" value="0.0" />
@@ -46,17 +48,20 @@ float editDiffuse(
     float3 pw,
     float4x4 els,
     float3 ewp,
+    float3 owp,
     float a,
     float s,
     float wy,
     float wx,
     float rot,
+    float R,
     float ns
 )
 {
     float PI = radians(180);
 
-    float3 lsVec = mul(normalize(pw-ewp), float3x3(els));
+    float3 det = normalize(pw - ewp);
+    float3 lsVec = mul(det, float3x3(els));
     lsVec = normalize(lsVec);
     float lsR = 1.0f / cos(lsVec.z);
     float lsTh = 1.0f / tan(lsVec.y / lsVec.x);
@@ -71,10 +76,21 @@ float editDiffuse(
 
     float cTh = 1.0f;
     if (thw <= -PI/2.0f || thw >= PI/2.0f) cTh = 0.0f;
+
+    float ft = 20.0f * (R - distance(pw, ewp));
+    float weight = 0.0f;
+    if (ft >= 0.0f && ft <= 1.0f) weight = 3.0f * pow(ft, 2) - 2.0f * pow(ft, 3);
+    else weight = 0.0f;
+
+    float3 n_ = (1-ns)*Nw + ns*normalize(pw-owp);
+    float gammaW = dot(normalize(n_), det);
+
+    return cTh * weight * gammaW * Iw;
 }
 float ETSShaderDiffuse(
     float4x4 editLightSpace[50],
     float3 editWorldPosition[50],
+    float3 originWorldPosition[50],
     float anisotropy[50],
     float sharpness[50],
     float bend[50],
@@ -83,7 +99,8 @@ float ETSShaderDiffuse(
     float normalSmooth[50],
     float intensityGain[50],
     float softness[50],
-    int editNum
+    int editNum,
+    float influenceDistance
 )
 {
     float res = 0.0f;
@@ -112,7 +129,8 @@ float ETSShaderDiffuse(
     float normalSmooth[50],
     float intensityGain[50],
     float softness[50],
-    int editNum
+    int editNum,
+    float influenceDistance
 )
 {
     float res = 0.0f;
@@ -141,7 +159,8 @@ float ETSShaderDiffuse(
     float normalSmooth[50],
     float intensityGain[50],
     float softness[50],
-    int editNum
+    int editNum,
+    float influenceDistance
 )
 {
     float res = 0.0f;
